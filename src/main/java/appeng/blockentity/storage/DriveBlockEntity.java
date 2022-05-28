@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -45,6 +46,7 @@ import appeng.api.storage.IStorageMounts;
 import appeng.api.storage.IStorageProvider;
 import appeng.api.storage.StorageCells;
 import appeng.api.storage.cells.CellState;
+import appeng.api.storage.cells.StorageCell;
 import appeng.api.util.AECableType;
 import appeng.blockentity.grid.AENetworkInvBlockEntity;
 import appeng.blockentity.inventory.AppEngCellInventory;
@@ -390,7 +392,7 @@ public class DriveBlockEntity extends AENetworkInvBlockEntity
 
         @Override
         public boolean allowInsert(InternalInventory inv, int slot, ItemStack stack) {
-            return !stack.isEmpty() && StorageCells.isCellHandled(stack);
+            return !stack.isEmpty() && ContainerItemContext.withInitial(stack).find(StorageCell.ITEM) != null;
         }
 
     }

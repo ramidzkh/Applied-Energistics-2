@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
@@ -73,7 +74,6 @@ import appeng.api.storage.MEStorage;
 import appeng.api.storage.StorageCells;
 import appeng.api.storage.StorageHelper;
 import appeng.api.storage.cells.CellState;
-import appeng.api.storage.cells.ICellHandler;
 import appeng.api.storage.cells.StorageCell;
 import appeng.api.util.AEColor;
 import appeng.api.util.IConfigManager;
@@ -226,9 +226,8 @@ public class ChestBlockEntity extends AENetworkPowerBlockEntity
         this.updateHandler();
 
         final ItemStack cell = this.getCell();
-        final ICellHandler ch = StorageCells.getHandler(cell);
 
-        if (this.cellHandler != null && ch != null) {
+        if (this.cellHandler != null && ContainerItemContext.withInitial(cell).find(StorageCell.ITEM) != null) {
             return this.cellHandler.cellInventory.getStatus();
         }
 
@@ -481,12 +480,10 @@ public class ChestBlockEntity extends AENetworkPowerBlockEntity
     public boolean openGui(Player p) {
         this.updateHandler();
         if (this.cellHandler != null) {
-            var ch = StorageCells.getHandler(this.getCell());
-
-            if (ch != null) {
+            if (ContainerItemContext.withInitial(this.getCell()).find(StorageCell.ITEM) != null) {
                 var chg = StorageCells.getGuiHandler(this.getCell());
                 if (chg != null) {
-                    chg.openChestGui(p, this, ch, this.getCell());
+                    chg.openChestGui(p, this, this.getCell());
                     return true;
                 }
             }
@@ -690,7 +687,7 @@ public class ChestBlockEntity extends AENetworkPowerBlockEntity
 
         @Override
         public boolean allowInsert(InternalInventory inv, int slot, ItemStack stack) {
-            return StorageCells.getHandler(stack) != null;
+            return ContainerItemContext.withInitial(stack).find(StorageCell.ITEM) != null;
         }
 
     }

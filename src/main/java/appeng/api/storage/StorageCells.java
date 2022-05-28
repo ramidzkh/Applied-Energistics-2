@@ -25,18 +25,14 @@ package appeng.api.storage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
-
-import com.google.common.base.Preconditions;
 
 import net.minecraft.world.item.ItemStack;
 
 import appeng.api.storage.cells.IBasicCellItem;
 import appeng.api.storage.cells.ICellGuiHandler;
-import appeng.api.storage.cells.ICellHandler;
 import appeng.api.storage.cells.ISaveProvider;
 import appeng.api.storage.cells.StorageCell;
 
@@ -47,26 +43,9 @@ import appeng.api.storage.cells.StorageCell;
 @ThreadSafe
 public final class StorageCells {
 
-    private static final List<ICellHandler> handlers = new ArrayList<>();
     private static final List<ICellGuiHandler> guiHandlers = new ArrayList<>();
 
     private StorageCells() {
-    }
-
-    /**
-     * Register a new handler.
-     * <p>
-     * Never be call before {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} was handled by AE2. Will
-     * throw an exception otherwise.
-     *
-     * @param handler cell handler
-     */
-    public static synchronized void addCellHandler(ICellHandler handler) {
-        Objects.requireNonNull(handler, "Called before FMLCommonSetupEvent.");
-        Preconditions.checkArgument(!handlers.contains(handler),
-                "Tried to register the same handler instance twice.");
-
-        handlers.add(handler);
     }
 
     /**
@@ -76,44 +55,6 @@ public final class StorageCells {
      */
     public static synchronized void addCellGuiHandler(ICellGuiHandler handler) {
         guiHandlers.add(handler);
-    }
-
-    /**
-     * return true, if you can get a InventoryHandler for the item passed.
-     *
-     * @param is to be checked item
-     * @return true if the provided item, can be handled by a handler in AE, ( AE May choose to skip this and just get
-     *         the handler instead. )
-     */
-    public static synchronized boolean isCellHandled(ItemStack is) {
-        if (is.isEmpty()) {
-            return false;
-        }
-        for (ICellHandler ch : handlers) {
-            if (ch.isCell(is)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * get the handler, for the requested item.
-     *
-     * @param is to be checked item
-     * @return the handler registered for this item type.
-     */
-    @Nullable
-    public static synchronized ICellHandler getHandler(ItemStack is) {
-        if (is.isEmpty()) {
-            return null;
-        }
-        for (ICellHandler ch : handlers) {
-            if (ch.isCell(is)) {
-                return ch;
-            }
-        }
-        return null;
     }
 
     /**
@@ -144,19 +85,10 @@ public final class StorageCells {
      * @param is   item with inventory handler
      * @param host can be null. If provided, the host is responsible for persisting the cell content.
      * @return The cell inventory, or null if there isn't one.
+     * @deprecated Use {@link StorageCell#ITEM} instead
      */
     @Nullable
     public static synchronized StorageCell getCellInventory(ItemStack is, @Nullable ISaveProvider host) {
-        if (is.isEmpty()) {
-            return null;
-        }
-        for (var ch : handlers) {
-            var inventory = ch.getCellInventory(is, host);
-            if (inventory != null) {
-                return inventory;
-            }
-        }
         return null;
     }
-
 }

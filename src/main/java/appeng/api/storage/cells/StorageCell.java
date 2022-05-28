@@ -23,12 +23,20 @@
 
 package appeng.api.storage.cells;
 
+import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+
 import appeng.api.storage.MEStorage;
+import appeng.core.AppEng;
 
 /**
  * Represents the most general possible cell inventory. Register a {@link ICellHandler} to provide custom subclasses.
  */
 public interface StorageCell extends MEStorage {
+
+    ItemApiLookup<StorageCell, ContainerItemContext> ITEM = ItemApiLookup.get(
+            AppEng.makeId("storage_cell"), StorageCell.class, ContainerItemContext.class);
+
     /**
      * Return the current status of the cell.
      */

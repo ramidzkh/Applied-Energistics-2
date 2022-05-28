@@ -50,10 +50,9 @@ public interface ICellGuiHandler {
      * is not available via ME Chests simply tell the user they can't use it, or something, otherwise you should open
      * your gui and display the cell to the user.
      *
-     * @param player      player opening chest gui
-     * @param chest       to be opened chest
-     * @param cellHandler cell handler
-     * @param cell        the storage cell
+     * @param player player opening chest gui
+     * @param chest  to be opened chest
+     * @param cell   the storage cell
      */
-    void openChestGui(Player player, IChestOrDrive chest, ICellHandler cellHandler, ItemStack cell);
+    void openChestGui(Player player, IChestOrDrive chest, ItemStack cell);
 }

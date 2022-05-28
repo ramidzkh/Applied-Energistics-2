@@ -20,19 +20,26 @@ package appeng.me.cells;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
+import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import appeng.api.config.IncludeExclude;
 import appeng.api.storage.cells.ICellHandler;
 import appeng.api.storage.cells.ISaveProvider;
+import appeng.api.storage.cells.StorageCell;
 import appeng.core.localization.GuiText;
 import appeng.core.localization.Tooltips;
 
 /**
  * Cell handler that manages all normal storage cells (items, fluids).
  */
-public class BasicCellHandler implements ICellHandler {
+public class BasicCellHandler
+        implements ICellHandler, ItemApiLookup.ItemApiProvider<StorageCell, ContainerItemContext> {
+
     public static final BasicCellHandler INSTANCE = new BasicCellHandler();
 
     @Override
@@ -68,4 +75,8 @@ public class BasicCellHandler implements ICellHandler {
         }
     }
 
+    @Override
+    public @Nullable StorageCell find(ItemStack itemStack, ContainerItemContext context) {
+        throw new UnsupportedOperationException();
+    }
 }

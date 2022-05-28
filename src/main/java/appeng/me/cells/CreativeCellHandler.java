@@ -18,27 +18,27 @@
 
 package appeng.me.cells;
 
+import org.jetbrains.annotations.Nullable;
+
+import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.minecraft.world.item.ItemStack;
 
-import appeng.api.storage.cells.ICellHandler;
-import appeng.api.storage.cells.ISaveProvider;
 import appeng.api.storage.cells.StorageCell;
 import appeng.items.storage.CreativeCellItem;
 
 /**
  * Cell handler for creative storage cells (both fluid and item), which do not allow item insertion.
  */
-public class CreativeCellHandler implements ICellHandler {
-    @Override
-    public boolean isCell(ItemStack is) {
-        return !is.isEmpty() && is.getItem() instanceof CreativeCellItem;
-    }
+public class CreativeCellHandler implements ItemApiLookup.ItemApiProvider<StorageCell, ContainerItemContext> {
+    public static final CreativeCellHandler INSTANCE = new CreativeCellHandler();
 
     @Override
-    public StorageCell getCellInventory(ItemStack is, ISaveProvider container) {
-        if (!is.isEmpty() && is.getItem() instanceof CreativeCellItem) {
-            return new CreativeCellInventory(is);
+    public @Nullable StorageCell find(ItemStack itemStack, ContainerItemContext context) {
+        if (!itemStack.isEmpty() && itemStack.getItem() instanceof CreativeCellItem) {
+            return new CreativeCellInventory(itemStack);
         }
+
         return null;
     }
 }

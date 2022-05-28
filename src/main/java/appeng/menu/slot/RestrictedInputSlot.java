@@ -18,6 +18,7 @@
 
 package appeng.menu.slot;
 
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -32,8 +33,8 @@ import appeng.api.implementations.items.IBiometricCard;
 import appeng.api.implementations.items.ISpatialStorageCell;
 import appeng.api.implementations.items.IStorageComponent;
 import appeng.api.inventories.InternalInventory;
-import appeng.api.storage.StorageCells;
 import appeng.api.storage.cells.ICellWorkbenchItem;
+import appeng.api.storage.cells.StorageCell;
 import appeng.api.upgrades.Upgrades;
 import appeng.blockentity.misc.InscriberRecipes;
 import appeng.blockentity.misc.VibrationChamberBlockEntity;
@@ -144,7 +145,7 @@ public class RestrictedInputSlot extends AppEngSlot {
                 return stack.getItem() instanceof ISpatialStorageCell
                         && ((ISpatialStorageCell) stack.getItem()).isSpatialStorage(stack);
             case STORAGE_CELLS:
-                return StorageCells.isCellHandled(stack);
+                return ContainerItemContext.withInitial(stack).find(StorageCell.ITEM) != null;
             case WORKBENCH_CELL:
                 return stack.getItem() instanceof ICellWorkbenchItem
                         && ((ICellWorkbenchItem) stack.getItem()).isEditable(stack);
@@ -152,7 +153,7 @@ public class RestrictedInputSlot extends AppEngSlot {
                 return stack.getItem() instanceof IStorageComponent
                         && ((IStorageComponent) stack.getItem()).isStorageComponent(stack);
             case TRASH:
-                if (StorageCells.isCellHandled(stack)) {
+                if (ContainerItemContext.withInitial(stack).find(StorageCell.ITEM) != null) {
                     return false;
                 }
 
