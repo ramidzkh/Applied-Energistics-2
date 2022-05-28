@@ -24,36 +24,25 @@ import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import appeng.api.config.IncludeExclude;
-import appeng.api.storage.cells.ICellHandler;
-import appeng.api.storage.cells.ISaveProvider;
 import appeng.api.storage.cells.StorageCell;
 import appeng.core.localization.GuiText;
 import appeng.core.localization.Tooltips;
+import appeng.util.Platform;
 
 /**
  * Cell handler that manages all normal storage cells (items, fluids).
  */
-public class BasicCellHandler
-        implements ICellHandler, ItemApiLookup.ItemApiProvider<StorageCell, ContainerItemContext> {
+public class BasicCellHandler implements ItemApiLookup.ItemApiProvider<StorageCell, ContainerItemContext> {
 
     public static final BasicCellHandler INSTANCE = new BasicCellHandler();
 
-    @Override
-    public boolean isCell(ItemStack is) {
-        return BasicCellInventory.isCell(is);
-    }
-
-    @Override
-    public BasicCellInventory getCellInventory(ItemStack is, ISaveProvider container) {
-        return BasicCellInventory.createInventory(is, container);
-    }
-
     public void addCellInformationToTooltip(ItemStack is, List<Component> lines) {
-        var handler = getCellInventory(is, null);
+        var handler = BasicCellInventory.createInventory(is, null);
         if (handler == null) {
             return;
         }
@@ -77,6 +66,11 @@ public class BasicCellHandler
 
     @Override
     public @Nullable StorageCell find(ItemStack itemStack, ContainerItemContext context) {
-        throw new UnsupportedOperationException();
+        return BasicCellInventory.createInventory(itemStack, () -> {
+            try (var tx = Platform.openOrJoinTx()) {
+                context.exchange(ItemVariant.of(itemStack), context.getAmount(), tx);
+                tx.commit();
+            }
+        });
     }
 }

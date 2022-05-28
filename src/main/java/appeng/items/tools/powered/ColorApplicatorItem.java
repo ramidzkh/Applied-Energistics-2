@@ -80,7 +80,6 @@ import appeng.hooks.IBlockTool;
 import appeng.items.contents.CellConfig;
 import appeng.items.misc.PaintBallItem;
 import appeng.items.tools.powered.powersink.AEBasePoweredItem;
-import appeng.me.cells.BasicCellHandler;
 import appeng.me.helpers.BaseActionSource;
 import appeng.me.helpers.PlayerSource;
 import appeng.util.ConfigInventory;
@@ -534,7 +533,7 @@ public class ColorApplicatorItem extends AEBasePoweredItem
         var applicator = new ItemStack(item);
 
         // Add all dyes
-        var dyeStorage = BasicCellHandler.INSTANCE.getCellInventory(applicator, null);
+        var dyeStorage = StorageCells.getCellInventory(applicator, null);
 
         for (var dyeItem : VANILLA_DYES.values()) {
             dyeStorage.insert(AEItemKey.of(dyeItem), 128, Actionable.MODULATE, new BaseActionSource());

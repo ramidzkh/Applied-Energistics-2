@@ -62,7 +62,6 @@ import appeng.core.definitions.AEItems;
 import appeng.core.definitions.AEParts;
 import appeng.items.storage.CreativeCellItem;
 import appeng.items.tools.powered.MatterCannonItem;
-import appeng.me.cells.BasicCellInventory;
 import appeng.me.helpers.BaseActionSource;
 import appeng.me.service.PathingService;
 import appeng.menu.AutoCraftingMenu;
@@ -592,7 +591,7 @@ public final class TestPlots {
     private static ItemStack createMatterCannon(Item... ammo) {
         var cannon = AEItems.MATTER_CANNON.stack();
         ((MatterCannonItem) cannon.getItem()).injectAEPower(cannon, Double.MAX_VALUE, Actionable.MODULATE);
-        var cannonInv = BasicCellInventory.createInventory(cannon, null);
+        var cannonInv = StorageCells.getCellInventory(cannon, null);
         for (var item : ammo) {
             cannonInv.insert(
                     AEItemKey.of(item), item.getMaxStackSize(), Actionable.MODULATE, new BaseActionSource());

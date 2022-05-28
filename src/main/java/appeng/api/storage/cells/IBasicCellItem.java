@@ -37,7 +37,7 @@ import appeng.util.ConfigInventory;
 
 /**
  * Implement this on any item to register a "basic cell", which is a cell that works similarly to AE2's own item and
- * fluid cells. There is no need to register an {@link ICellHandler} for such an item. AE2 automatically handles the
+ * fluid cells. There is no need to register an {@link StorageCell#ITEM} for such an item. AE2 automatically handles the
  * internals and NBT data, which is both nice, and bad for you!
  * <p/>
  * The standard AE implementation also only provides 1-63 Types.

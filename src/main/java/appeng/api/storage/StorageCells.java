@@ -87,6 +87,7 @@ public final class StorageCells {
      * @return The cell inventory, or null if there isn't one.
      * @deprecated Use {@link StorageCell#ITEM} instead
      */
+    @Deprecated
     @Nullable
     public static synchronized StorageCell getCellInventory(ItemStack is, @Nullable ISaveProvider host) {
         return null;

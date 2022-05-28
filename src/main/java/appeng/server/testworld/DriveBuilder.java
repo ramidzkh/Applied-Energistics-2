@@ -14,8 +14,9 @@ import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
+import appeng.api.storage.StorageCells;
+import appeng.api.storage.cells.StorageCell;
 import appeng.core.definitions.AEItems;
-import appeng.me.cells.BasicCellInventory;
 import appeng.me.helpers.BaseActionSource;
 import appeng.util.ConfigInventory;
 
@@ -38,14 +39,14 @@ public class DriveBuilder {
 
     public ItemCellBuilder addItemCell64k() {
         var cell = AEItems.ITEM_CELL_64K.stack();
-        var cellInv = BasicCellInventory.createInventory(cell, null);
+        var cellInv = StorageCells.getCellInventory(cell, null);
         cells.add(cell);
         return new ItemCellBuilder(cellInv);
     }
 
     public FluidCellBuilder addFluidCell64k() {
         var cell = AEItems.FLUID_CELL_64K.stack();
-        var cellInv = BasicCellInventory.createInventory(cell, null);
+        var cellInv = StorageCells.getCellInventory(cell, null);
         cells.add(cell);
         return new FluidCellBuilder(cellInv);
     }
@@ -73,7 +74,7 @@ public class DriveBuilder {
     }
 
     public class FluidCellBuilder extends CellBuilder {
-        public FluidCellBuilder(BasicCellInventory inv) {
+        public FluidCellBuilder(StorageCell inv) {
             super(inv);
         }
 
@@ -83,7 +84,7 @@ public class DriveBuilder {
     }
 
     public class ItemCellBuilder extends CellBuilder {
-        public ItemCellBuilder(BasicCellInventory inv) {
+        public ItemCellBuilder(StorageCell inv) {
             super(inv);
         }
 

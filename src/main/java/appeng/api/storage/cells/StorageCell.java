@@ -30,7 +30,8 @@ import appeng.api.storage.MEStorage;
 import appeng.core.AppEng;
 
 /**
- * Represents the most general possible cell inventory. Register a {@link ICellHandler} to provide custom subclasses.
+ * Represents the most general possible cell inventory. Register a {@link StorageCell#ITEM} to provide custom
+ * subclasses.
  */
 public interface StorageCell extends MEStorage {
 
