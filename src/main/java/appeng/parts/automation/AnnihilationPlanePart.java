@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -109,26 +107,15 @@ public class AnnihilationPlanePart extends AEBasePart implements IGridTickable {
     public void readFromNBT(ValueInput data) {
         super.readFromNBT(data);
 
-        var enchantmentsTag = data.getCompound("enchantments");
-        var ops = registries.createSerializationContext(NbtOps.INSTANCE);
-        if (enchantmentsTag.isPresent()) {
-            this.enchantments = ItemEnchantments.CODEC.decode(ops, enchantmentsTag.get())
-                    .ifError(err -> LOG.warn("Failed to load enchantments for part {}: {}", this, err.message()))
-                    .getOrThrow()
-                    .getFirst();
-        } else {
-            this.enchantments = ItemEnchantments.EMPTY;
-        }
+        this.enchantments = data.read("enchantments", ItemEnchantments.CODEC).orElse(ItemEnchantments.EMPTY);
     }
 
     @Override
     public void writeToNBT(ValueOutput data) {
         super.writeToNBT(data);
 
-        var ops = registries.createSerializationContext(NbtOps.INSTANCE);
-        var enchantmentsTag = ItemEnchantments.CODEC.encodeStart(ops, enchantments).getOrThrow();
-        if (enchantmentsTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty()) {
-            data.put("enchantments", enchantmentsTag);
+        if (!enchantments.isEmpty()) {
+            data.store("enchantments", ItemEnchantments.CODEC, enchantments);
         }
     }
 

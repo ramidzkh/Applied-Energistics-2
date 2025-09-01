@@ -2,7 +2,9 @@ package appeng.integration.modules.igtooltip.blocks;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.entity.player.Player;
 
 import appeng.api.client.AEKeyRendering;
@@ -26,10 +28,8 @@ public final class PatternProviderDataProvider
 
     @Override
     public void buildTooltip(PatternProviderLogicHost host, TooltipContext context, TooltipBuilder tooltip) {
-        var lockReason = context.serverData().getStringOr(NBT_LOCK_REASON, "");
-        if (!lockReason.isEmpty()) {
-            tooltip.addLine(Component.Serializer.fromJson(lockReason, context.registries()));
-        }
+        ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, context.serverData().get(NBT_LOCK_REASON))
+                .ifSuccess(tooltip::addLine);
         var stack = context.serverData().getCompound(NBT_LOCK_UNTIL_RESULT_STACK).orElse(null);
         if (stack != null) {
             var genericStack = GenericStack.readTag(context.registries(), stack);
@@ -78,8 +78,8 @@ public final class PatternProviderDataProvider
         }
 
         if (reason != null) {
-            serverData.putString(NBT_LOCK_REASON,
-                    Component.Serializer.toJson(reason.copy().withStyle(ChatFormatting.RED), player.registryAccess()));
+            serverData.put(NBT_LOCK_REASON, ComponentSerialization.CODEC
+                    .encodeStart(NbtOps.INSTANCE, reason.copy().withStyle(ChatFormatting.RED)).getOrThrow());
         }
     }
 }

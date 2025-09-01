@@ -52,7 +52,7 @@ public class MultiCraftingTracker {
 
     public void readFromNBT(ValueInput extra) {
         for (int x = 0; x < this.size; x++) {
-            var link = extra.getCompound("links-" + x).orElse(null);
+            var link = extra.read("links-" + x, CompoundTag.CODEC).orElse(null);
             if (link != null && !link.isEmpty()) {
                 this.setLink(x, StorageHelper.loadCraftingLink(link, this.owner));
             }
@@ -66,7 +66,7 @@ public class MultiCraftingTracker {
             if (link != null) {
                 final CompoundTag ln = new CompoundTag();
                 link.writeToNBT(ln);
-                extra.put("links-" + x, ln);
+                extra.store("links-" + x, CompoundTag.CODEC, ln);
             }
         }
     }

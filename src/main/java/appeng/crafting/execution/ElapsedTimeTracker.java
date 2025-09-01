@@ -18,7 +18,6 @@
 
 package appeng.crafting.execution;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -47,28 +46,26 @@ public class ElapsedTimeTracker {
 
     public ElapsedTimeTracker(ValueInput data) {
         this.elapsedTime = data.getLongOr(NBT_ELAPSED_TIME, 0);
-        readLongByTypeMap(data.getCompoundOrEmpty(NBT_STARTED_WORK), startedWorkByType);
-        readLongByTypeMap(data.getCompoundOrEmpty(NBT_COMPLETED_WORK), completedWorkByType);
+        readLongByTypeMap(data.childOrEmpty(NBT_STARTED_WORK), startedWorkByType);
+        readLongByTypeMap(data.childOrEmpty(NBT_COMPLETED_WORK), completedWorkByType);
     }
 
     public void writeToNBT(ValueOutput data) {
         data.putLong(NBT_ELAPSED_TIME, elapsedTime);
-        data.put(NBT_STARTED_WORK, writeLongByTypeMap(startedWorkByType));
-        data.put(NBT_COMPLETED_WORK, writeLongByTypeMap(completedWorkByType));
+        writeLongByTypeMap(data.child(NBT_STARTED_WORK), startedWorkByType);
+        writeLongByTypeMap(data.child(NBT_COMPLETED_WORK), completedWorkByType);
     }
 
-    private static void readLongByTypeMap(CompoundTag tag, Reference2LongMap<AEKeyType> output) {
+    private static void readLongByTypeMap(ValueInput tag, Reference2LongMap<AEKeyType> output) {
         for (var keyType : AEKeyTypes.getAll()) {
             output.put(keyType, tag.getLongOr(keyType.getId().toString(), 0));
         }
     }
 
-    private static CompoundTag writeLongByTypeMap(Reference2LongMap<AEKeyType> input) {
-        CompoundTag result = new CompoundTag();
+    private static void writeLongByTypeMap(ValueOutput output, Reference2LongMap<AEKeyType> input) {
         for (var entry : input.reference2LongEntrySet()) {
-            result.putLong(entry.getKey().getId().toString(), entry.getLongValue());
+            output.putLong(entry.getKey().getId().toString(), entry.getLongValue());
         }
-        return result;
     }
 
     private void updateTime() {

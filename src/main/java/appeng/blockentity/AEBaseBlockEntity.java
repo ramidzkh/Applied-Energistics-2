@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -46,11 +47,13 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.Nameable;
@@ -63,6 +66,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
@@ -140,14 +144,9 @@ public class AEBaseBlockEntity extends BlockEntity
     protected final void loadAdditional(ValueInput tag) {
         // On the client, this can either be data received as part of an initial chunk update,
         // or as part of a sole block entity data update.
-        RegistryAccess registryAccess = null;
-        if (registries instanceof RegistryAccess) {
-            registryAccess = (RegistryAccess) registries;
-        } else if (level != null) {
-            registryAccess = level.registryAccess();
-        }
-        if (tag.size() == 1) {
-            var updateData = tag.getByteArray("#upd");
+        RegistryAccess registryAccess = (RegistryAccess) tag.lookup();
+        if (tag.keySet().size() == 1) {
+            var updateData = tag.read("#upd", Codec.BYTE_BUFFER);
             if (updateData.isPresent()) {
                 if (registryAccess == null) {
                     LOG.warn("Ignoring  update packet for {} since no registry is available.", this);
@@ -165,16 +164,14 @@ public class AEBaseBlockEntity extends BlockEntity
         }
 
         // Load visual client-side data (used by PonderJS)
-        tag.getCompound("visual").ifPresent(this::loadVisualState);
+        tag.read("visual", CompoundTag.CODEC).ifPresent(this::loadVisualState);
 
-        super.loadAdditional(tag, registries);
+        super.loadAdditional(tag);
         loadTag(tag);
     }
 
     public void loadTag(ValueInput data) {
-        this.customName = data.getString("customName")
-                .map(Component::literal)
-                .orElse(null);
+        this.customName = parseCustomNameSafe(data, "CustomName");
     }
 
     @Override
@@ -183,14 +180,12 @@ public class AEBaseBlockEntity extends BlockEntity
         if (VisualStateSaving.isEnabled(level)) {
             var visualTag = new CompoundTag();
             saveVisualState(visualTag);
-            data.put("visual", visualTag);
+            data.store("visual", CompoundTag.CODEC, visualTag);
         }
 
         super.saveAdditional(data);
 
-        if (this.customName != null) {
-            data.putString("customName", this.customName.getString());
-        }
+        data.storeNullable("CustomName", ComponentSerialization.CODEC, this.customName);
     }
 
     /**
@@ -507,8 +502,13 @@ public class AEBaseBlockEntity extends BlockEntity
     public void debugExport(JsonWriter writer, HolderLookup.Provider registries, Reference2IntMap<Object> machineIds,
             Reference2IntMap<IGridNode> nodeIds)
             throws IOException {
-        var data = new CompoundTag();
-        saveAdditional(data);
+        CompoundTag data;
+
+        try (var reporter = new ProblemReporter.ScopedCollector(LOG)) {
+            var output = TagValueOutput.createWithContext(reporter, registries);
+            saveAdditional(output);
+            data = output.buildResult();
+        }
 
         var ops = registries.createSerializationContext(JsonOps.INSTANCE);
         JsonStreamUtil.writeProperties(Map.of(

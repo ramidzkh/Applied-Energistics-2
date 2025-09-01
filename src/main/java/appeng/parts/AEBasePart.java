@@ -37,6 +37,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.Nameable;
@@ -196,23 +197,16 @@ public abstract class AEBasePart
     public void readFromNBT(ValueInput data) {
         this.mainNode.loadFromNBT(data);
 
-        if (data.contains("customName")) {
-            try {
-                this.customName = Component.Serializer.fromJson(data.getStringOr("customName", ""), registries);
-            } catch (Exception ignored) {
-            }
-        }
+        this.customName = BlockEntity.parseCustomNameSafe(data, "CustomName");
 
-        data.getCompound("visual").ifPresent(this::readVisualStateFromNBT);
+        data.read("visual", CompoundTag.CODEC).ifPresent(this::readVisualStateFromNBT);
     }
 
     @Override
     public void writeToNBT(ValueOutput data) {
         this.mainNode.saveToNBT(data);
 
-        if (this.customName != null) {
-            data.putString("customName", Component.Serializer.toJson(this.customName, registries));
-        }
+        data.storeNullable("CustomName", ComponentSerialization.CODEC, this.customName);
     }
 
     @MustBeInvokedByOverriders

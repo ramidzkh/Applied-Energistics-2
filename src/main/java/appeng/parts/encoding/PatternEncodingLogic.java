@@ -259,12 +259,9 @@ public class PatternEncodingLogic implements InternalInventoryHost {
             this.setSubstitution(data.getBooleanOr("substitute", false));
             this.setFluidSubstitution(data.getBooleanOr("substituteFluids", false));
 
-            if (data.contains("stonecuttingRecipeId")) {
-                this.stonecuttingRecipeId = ResourceKey.create(Registries.RECIPE,
-                        ResourceLocation.parse(data.getStringOr("stonecuttingRecipeId", "")));
-            } else {
-                this.stonecuttingRecipeId = null;
-            }
+            this.stonecuttingRecipeId = data.read("stonecuttingRecipeId", ResourceLocation.CODEC)
+                    .map(id -> ResourceKey.create(Registries.RECIPE, id))
+                    .orElse(null);
 
             blankPatternInv.readFromNBT(data, "blankPattern");
             encodedPatternInv.readFromNBT(data, "encodedPattern");

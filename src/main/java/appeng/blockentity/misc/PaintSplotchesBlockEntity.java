@@ -18,10 +18,13 @@
 
 package appeng.blockentity.misc;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.mojang.serialization.Codec;
 
 import io.netty.buffer.Unpooled;
 
@@ -62,7 +65,7 @@ public class PaintSplotchesBlockEntity extends AEBaseBlockEntity {
         final FriendlyByteBuf myDat = new FriendlyByteBuf(Unpooled.buffer());
         this.writeBuffer(myDat);
         if (myDat.hasArray()) {
-            data.putByteArray("dots", myDat.array());
+            data.store("dots", Codec.BYTE_BUFFER, ByteBuffer.wrap(myDat.array()));
         }
     }
 
@@ -82,8 +85,8 @@ public class PaintSplotchesBlockEntity extends AEBaseBlockEntity {
     @Override
     public void loadTag(ValueInput data) {
         super.loadTag(data);
-        byte[] dotsBuffer = data.getByteArray("dots").orElse(new byte[0]);
-        this.readBuffer(new FriendlyByteBuf(Unpooled.copiedBuffer(dotsBuffer)));
+        var dotsBuffer = data.read("dots", Codec.BYTE_BUFFER).orElse(ByteBuffer.allocate(0));
+        this.readBuffer(new FriendlyByteBuf(Unpooled.wrappedBuffer(dotsBuffer)));
     }
 
     private void readBuffer(FriendlyByteBuf in) {

@@ -1,12 +1,14 @@
 package appeng.blockentity.storage;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -36,17 +38,13 @@ public class SkyStoneTankBlockEntity extends AEBaseBlockEntity {
     @Override
     public void saveAdditional(ValueOutput data) {
         super.saveAdditional(data);
-        var tankNbt = new CompoundTag();
-        tank.writeToNBT(registries, tankNbt);
-        if (!tankNbt.isEmpty()) {
-            data.put("content", tankNbt);
-        }
+        tank.serialize(data);
     }
 
     @Override
     public void loadTag(ValueInput data) {
         super.loadTag(data);
-        tank.readFromNBT(registries, data.getCompoundOrEmpty("tank"));
+        tank.deserialize(data);
     }
 
     public boolean onPlayerUse(Player player, InteractionHand hand) {
@@ -63,14 +61,14 @@ public class SkyStoneTankBlockEntity extends AEBaseBlockEntity {
 
     protected boolean readFromStream(RegistryFriendlyByteBuf data) {
         boolean ret = super.readFromStream(data);
-        tank.readFromNBT(data.registryAccess(), data.readNbt());
+        tank.deserialize(TagValueInput.create(ProblemReporter.DISCARDING, data.registryAccess(), data.readNbt()));
         return ret;
     }
 
     protected void writeToStream(RegistryFriendlyByteBuf data) {
         super.writeToStream(data);
-        var tag = new CompoundTag();
-        tank.writeToNBT(data.registryAccess(), tag);
-        data.writeNbt(tag);
+        var output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, data.registryAccess());
+        tank.serialize(output);
+        data.writeNbt(output.buildResult());
     }
 }

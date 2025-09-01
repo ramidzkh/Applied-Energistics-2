@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -169,7 +168,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         } else if (unlockEvent == UnlockCraftingEvent.RESULT) {
             if (unlockStack != null) {
                 tag.putByte(NBT_UNLOCK_EVENT, (byte) 2);
-                tag.put(NBT_UNLOCK_STACK, GenericStack.writeTag(registries, unlockStack));
+                tag.store(NBT_UNLOCK_STACK, GenericStack.CODEC, unlockStack);
             } else {
                 LOG.error("Saving pattern provider {}, locked waiting for stack, but stack is null!", host);
             }
@@ -177,16 +176,15 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
             tag.putByte(NBT_UNLOCK_EVENT, (byte) 3);
         }
 
-        ListTag sendListTag = new ListTag();
+        var sendListTag = tag.list(NBT_SEND_LIST, GenericStack.CODEC);
         for (var toSend : sendList) {
-            sendListTag.add(GenericStack.writeTag(registries, toSend));
+            sendListTag.add(toSend);
         }
-        tag.put(NBT_SEND_LIST, sendListTag);
         if (sendDirection != null) {
             tag.putByte(NBT_SEND_DIRECTION, (byte) sendDirection.get3DDataValue());
         }
 
-        tag.put(NBT_RETURN_INV, this.returnInv.writeToTag(registries));
+        this.returnInv.writeToChildTag(tag, NBT_RETURN_INV);
     }
 
     public void readFromNBT(ValueInput tag) {
@@ -206,7 +204,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
             }
         };
         if (this.unlockEvent == UnlockCraftingEvent.RESULT) {
-            this.unlockStack = GenericStack.readTag(registries, tag.getCompoundOrEmpty(NBT_UNLOCK_STACK));
+            this.unlockStack = tag.read(NBT_UNLOCK_STACK, GenericStack.CODEC).orElse(null);
             if (this.unlockStack == null) {
                 LOG.error("Could not load unlock stack for pattern provider from NBT: {}", tag);
             }
@@ -214,18 +212,15 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
             this.unlockStack = null;
         }
 
-        var sendListTag = tag.getListOrEmpty("sendList");
-        for (int i = 0; i < sendListTag.size(); ++i) {
-            var stack = GenericStack.readTag(registries, sendListTag.getCompoundOrEmpty(i));
-            if (stack != null) {
-                this.addToSendList(stack.what(), stack.amount());
-            }
-        }
-        if (tag.contains("sendDirection")) {
-            sendDirection = Direction.from3DDataValue(tag.getByteOr("sendDirection", (byte) 0));
+        for (var stack : tag.listOrEmpty(NBT_SEND_LIST, GenericStack.CODEC)) {
+            this.addToSendList(stack.what(), stack.amount());
         }
 
-        this.returnInv.readFromTag(tag.getListOrEmpty("returnInv"), registries);
+        tag.read(NBT_SEND_DIRECTION, Direction.CODEC).ifPresent(direction -> {
+            this.sendDirection = direction;
+        });
+
+        this.returnInv.readFromChildTag(tag, NBT_RETURN_INV);
     }
 
     public IConfigManager getConfigManager() {

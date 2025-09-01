@@ -21,11 +21,14 @@ package appeng.crafting.execution;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.config.Actionable;
 import appeng.api.crafting.IPatternDetails;
@@ -88,17 +91,17 @@ public class ExecutingCraftingJob {
 
     ExecutingCraftingJob(ValueInput data,
             CraftingDifferenceListener postCraftingDifference, CraftingCpuLogic cpu) {
-        this.link = new CraftingLink(data.getCompoundOrEmpty(NBT_LINK), cpu.cluster);
+        this.link = new CraftingLink(data.read(NBT_LINK, CompoundTag.CODEC).orElseGet(CompoundTag::new), cpu.cluster);
         IGrid grid = cpu.cluster.getGrid();
         if (grid != null) {
             ((CraftingService) grid.getCraftingService()).addLink(link);
         }
 
-        this.finalOutput = GenericStack.readTag(registries, data.getCompoundOrEmpty(NBT_FINAL_OUTPUT));
+        this.finalOutput = data.read(NBT_FINAL_OUTPUT, GenericStack.CODEC).get();
         this.remainingAmount = data.getLongOr(NBT_REMAINING_AMOUNT, 0);
         this.waitingFor = new ListCraftingInventory(postCraftingDifference::onCraftingDifference);
-        this.waitingFor.readFromNBT(data.getListOrEmpty(NBT_WAITING_FOR), registries);
-        this.timeTracker = new ElapsedTimeTracker(data.getCompoundOrEmpty(NBT_TIME_TRACKER));
+        this.waitingFor.readFromNBT(data, NBT_WAITING_FOR);
+        this.timeTracker = new ElapsedTimeTracker(data.childOrEmpty(NBT_TIME_TRACKER));
         this.playerId = data.getInt(NBT_PLAYER_ID).orElse(null);
 
         ListTag tasksTag = data.getListOrEmpty(NBT_TASKS);
@@ -117,12 +120,12 @@ public class ExecutingCraftingJob {
     void writeToNBT(ValueOutput data) {
         CompoundTag linkData = new CompoundTag();
         link.writeToNBT(linkData);
-        data.put(NBT_LINK, linkData);
+        data.store(NBT_LINK, CompoundTag.CODEC, linkData);
 
-        data.put(NBT_FINAL_OUTPUT, GenericStack.writeTag(registries, finalOutput));
+        data.store(NBT_FINAL_OUTPUT, GenericStack.CODEC, finalOutput);
 
-        data.put(NBT_WAITING_FOR, waitingFor.writeToNBT(registries));
-        data.put(NBT_TIME_TRACKER, timeTracker.writeToNBT());
+        waitingFor.writeToNBT(data, NBT_WAITING_FOR);
+        timeTracker.writeToNBT(data.child(NBT_TIME_TRACKER));
 
         final ListTag list = new ListTag();
         for (var e : this.tasks.entrySet()) {

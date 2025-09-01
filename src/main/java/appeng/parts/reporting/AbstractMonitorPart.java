@@ -112,9 +112,7 @@ public abstract class AbstractMonitorPart extends AbstractDisplayPart
 
         this.isLocked = data.getBooleanOr("isLocked", false);
 
-        this.configuredItem = data.getCompound("configuredItem")
-                .map(tag -> AEKey.fromTagGeneric(registries, tag))
-                .orElse(null);
+        this.configuredItem = data.read("configuredItem", AEKey.CODEC).orElse(null);
     }
 
     @Override
@@ -123,9 +121,7 @@ public abstract class AbstractMonitorPart extends AbstractDisplayPart
 
         data.putBoolean("isLocked", this.isLocked);
 
-        if (this.configuredItem != null) {
-            data.put("configuredItem", this.configuredItem.toTagGeneric(registries));
-        }
+        data.storeNullable("configuredItem", AEKey.CODEC, this.configuredItem);
     }
 
     @Override

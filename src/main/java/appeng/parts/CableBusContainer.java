@@ -27,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -796,23 +795,17 @@ public class CableBusContainer implements AEMultiBlockEntity, ICableBusContainer
         for (var side : Platform.DIRECTIONS_WITH_NULL) {
             var part = this.getPart(side);
             if (part != null) {
-                var partData = new CompoundTag();
+                var partData = data.child(NBT_KEY_SIDES[getSideIndex(side)]);
 
                 // Save visual state of the part if requested
                 if (saveVisualState) {
                     var visualTag = new CompoundTag();
                     part.writeVisualStateToNBT(visualTag);
-                    partData.put("visual", visualTag);
+                    partData.store("visual", CompoundTag.CODEC, visualTag);
                 }
 
                 part.writeToNBT(partData);
-                if (partData.contains("id")) {
-                    throw new IllegalStateException("Part " + part + " used the reserved 'id' field to store its data");
-                }
-
                 partData.putString("id", IPartItem.getId(part.getPartItem()).toString());
-                var sideKey = NBT_KEY_SIDES[getSideIndex(side)];
-                data.put(sideKey, partData);
             }
         }
     }
@@ -820,16 +813,16 @@ public class CableBusContainer implements AEMultiBlockEntity, ICableBusContainer
     public void readFromNBT(ValueInput data) {
         invalidateShapes();
 
-        if (data.contains("hasRedstone")) {
-            this.hasRedstone = YesNo.values()[data.getIntOr("hasRedstone", 0)];
-        }
+        data.getInt("hasRedstone").ifPresent(value -> {
+            this.hasRedstone = YesNo.values()[value];
+        });
 
         for (var side : Platform.DIRECTIONS_WITH_NULL) {
             var sideIndex = getSideIndex(side);
 
             var sideKey = NBT_KEY_SIDES[sideIndex];
-            var sideTag = data.get(sideKey);
-            if (sideTag instanceof CompoundTag partData && loadPart(side, partData, registries)) {
+            var sideTag = data.child(sideKey).orElse(null);
+            if (sideTag != null && loadPart(side, sideTag)) {
                 continue;
             }
 

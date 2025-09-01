@@ -111,7 +111,7 @@ public abstract class P2PTunnelPart<T extends P2PTunnelPart<T>> extends AEBasePa
     public void readFromNBT(ValueInput data) {
         super.readFromNBT(data);
         this.setOutput(data.getBooleanOr("output", false));
-        this.freq = data.getShortOr("freq", (short) 0);
+        this.freq = (short) data.getShortOr("freq", (short) 0);
     }
 
     @Override

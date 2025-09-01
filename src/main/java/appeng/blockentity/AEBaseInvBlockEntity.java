@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -49,16 +49,10 @@ public abstract class AEBaseInvBlockEntity extends AEBaseBlockEntity implements 
         super.loadTag(data);
         var inv = this.getInternalInventory();
         if (inv != InternalInventory.empty()) {
-            var opt = data.getCompound("inv").orElse(null);
-            for (int x = 0; x < inv.size(); x++) {
-                ItemStack item = ItemStack.EMPTY;
-                if (opt != null) {
-                    var itemTag = opt.getCompound("item" + x).orElse(null);
-                    if (itemTag != null && !itemTag.isEmpty()) {
-                        item = ItemStack.parse(registries, itemTag).orElse(ItemStack.EMPTY);
-                    }
+            for (var slot : data.listOrEmpty("inv", ItemStackWithSlot.CODEC)) {
+                if (slot.isValidInContainer(inv.size())) {
+                    inv.setItemDirect(slot.slot(), slot.stack());
                 }
-                inv.setItemDirect(x, item);
             }
         }
     }
@@ -70,14 +64,13 @@ public abstract class AEBaseInvBlockEntity extends AEBaseBlockEntity implements 
         super.saveAdditional(data);
         var inv = this.getInternalInventory();
         if (inv != InternalInventory.empty()) {
-            final CompoundTag opt = new CompoundTag();
+            var list = data.list("inv", ItemStackWithSlot.CODEC);
             for (int x = 0; x < inv.size(); x++) {
                 var is = inv.getStackInSlot(x);
                 if (!is.isEmpty()) {
-                    opt.put("item" + x, is.save(registries));
+                    list.add(new ItemStackWithSlot(x, is));
                 }
             }
-            data.put("inv", opt);
         }
     }
 

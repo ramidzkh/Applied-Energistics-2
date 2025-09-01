@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
@@ -88,23 +86,21 @@ public class KeyTypeSelection {
     }
 
     public void writeToNBT(ValueOutput tag) {
-        ListTag enabledKeyTypesTag = new ListTag();
+        var list = tag.list("enabledKeyTypes", ResourceLocation.CODEC);
         for (var entry : keyTypes.entrySet()) {
             if (entry.getValue()) {
-                enabledKeyTypesTag.add(StringTag.valueOf(entry.getKey().getId().toString()));
+                list.add(entry.getKey().getId());
             }
         }
-        tag.put("enabledKeyTypes", enabledKeyTypesTag);
     }
 
     public void readFromNBT(ValueInput tag) {
         for (var entry : keyTypes.entrySet()) {
             entry.setValue(false);
         }
-        ListTag enabledKeyTypesTag = tag.getListOrEmpty("enabledKeyTypes");
-        for (int i = 0; i < enabledKeyTypesTag.size(); i++) {
+        for (var id : tag.listOrEmpty("enabledKeyTypes", ResourceLocation.CODEC)) {
             try {
-                var keyType = AEKeyTypes.get(ResourceLocation.parse(enabledKeyTypesTag.getStringOr(i, "")));
+                var keyType = AEKeyTypes.get(id);
                 if (keyTypes.containsKey(keyType)) {
                     keyTypes.put(keyType, true);
                 }

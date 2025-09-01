@@ -67,7 +67,7 @@ public class CraftingMonitorBlockEntity extends CraftingBlockEntity implements I
     @Override
     public void loadTag(ValueInput data) {
         super.loadTag(data);
-        int colorIndex = data.getByte("paintedColor").orElse((byte) 0);
+        int colorIndex = data.getByteOr("paintedColor", (byte) 0);
         this.paintedColor = AEColor.fromOrdinal(colorIndex);
     }
 

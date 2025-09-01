@@ -102,8 +102,8 @@ public final class ConfigManager implements IConfigManager {
     public boolean readFromNBT(ValueInput tagCompound) {
         boolean anythingRead = false;
         for (var setting : this.settings.keySet()) {
-            if (tagCompound.contains(setting.getName())) {
-                String value = tagCompound.getStringOr(setting.getName(), "");
+            var value = tagCompound.getString(setting.getName()).orElse(null);
+            if (value != null) {
                 try {
                     setting.setFromString(this, value);
                     anythingRead = true;

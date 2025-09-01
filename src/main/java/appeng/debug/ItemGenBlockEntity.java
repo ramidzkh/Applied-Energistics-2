@@ -23,7 +23,6 @@ import java.util.Queue;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -77,15 +76,14 @@ public class ItemGenBlockEntity extends AEBaseBlockEntity implements InternalInv
     @Override
     public void saveAdditional(ValueOutput data) {
         super.saveAdditional(data);
-        data.putString("filter", BuiltInRegistries.ITEM.getKey(filter).toString());
+        data.store("filter", Item.CODEC, filter.builtInRegistryHolder());
     }
 
     @Override
     public void loadTag(ValueInput data) {
-        if (data.contains("filter")) {
-            Item item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(data.getStringOr("filter", "")));
-            this.setItem(item);
-        }
+        data.read("filter", Item.CODEC).ifPresent(holder -> {
+            this.setItem(holder.value());
+        });
         super.loadTag(data);
     }
 

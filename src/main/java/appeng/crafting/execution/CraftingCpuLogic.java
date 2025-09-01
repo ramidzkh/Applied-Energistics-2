@@ -422,9 +422,9 @@ public class CraftingCpuLogic {
     }
 
     public void readFromNBT(ValueInput data) {
-        if (data.contains("job")) {
-            this.job = new ExecutingCraftingJob(data.getCompoundOrEmpty("job"), registries, this::postChange, this);
         this.inventory.readFromNBT(data, "inventory");
+        if (data.child("job").isPresent()) {
+            this.job = new ExecutingCraftingJob(data.childOrEmpty("job"), this::postChange, this);
             if (this.job.finalOutput == null) {
                 finishJob(false);
             } else {

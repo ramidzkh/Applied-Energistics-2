@@ -26,8 +26,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.storage.ValueInput;
@@ -162,32 +161,23 @@ public class AppEngInternalInventory extends BaseInternalInventory {
 
     public void writeToNBT(ValueOutput data, String name) {
         if (isEmpty()) {
-            data.remove(name);
+            data.discard(name);
             return;
         }
 
-        var items = new ListTag();
+        var items = data.list(name, ItemStackWithSlot.CODEC);
         for (int i = 0; i < stacks.size(); i++) {
             var stack = stacks.get(i);
             if (!stack.isEmpty()) {
-                CompoundTag itemTag = new CompoundTag();
-                itemTag.putInt("Slot", i);
-                items.add(stack.save(registries, itemTag));
+                items.add(new ItemStackWithSlot(i, stack));
             }
         }
-        data.put(name, items);
     }
 
     public void readFromNBT(ValueInput data, String name) {
-        if (data.contains(name)) {
-            var tagList = data.getListOrEmpty(name);
-            for (var itemTag : tagList) {
-                var itemCompound = (CompoundTag) itemTag;
-                int slot = itemCompound.getIntOr("Slot", 0);
-
-                if (slot >= 0 && slot < stacks.size()) {
-                    stacks.set(slot, ItemStack.parse(registries, itemCompound).orElse(ItemStack.EMPTY));
-                }
+        for (var slot : data.listOrEmpty(name, ItemStackWithSlot.CODEC)) {
+            if (slot.isValidInContainer(stacks.size())) {
+                stacks.set(slot.slot(), slot.stack());
             }
         }
     }

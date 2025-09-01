@@ -231,7 +231,7 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
             // If the plan is null it means the pattern previously loaded from NBT hasn't been decoded yet
             var pattern = myPlan != null ? myPlan.getDefinition().toStack() : myPattern;
             if (!pattern.isEmpty()) {
-                data.put("myPlan", pattern.save(registries));
+                data.store("myPlan", ItemStack.CODEC, pattern);
                 data.putInt("pushDirection", this.pushDirection.ordinal());
             }
         }
@@ -244,9 +244,7 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
         super.loadTag(data);
 
         this.myPlan = null;
-        this.myPattern = data.getCompound("myPlan")
-                .flatMap(t -> ItemStack.parse(registries, t))
-                .orElse(ItemStack.EMPTY);
+        this.myPattern = data.read("myPlan", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         if (!this.myPattern.isEmpty()) {
             this.forcePlan = true;
             this.pushDirection = Direction.values()[data.getIntOr("pushDirection", 0)];
