@@ -44,7 +44,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import guideme.color.ConstantColor;
 import guideme.document.LytRect;
@@ -340,7 +340,7 @@ public class PatternAccessTermScreen<C extends PatternAccessTermMenu> extends AE
                 PatternSlot machineSlot = (PatternSlot) slot;
                 final InventoryActionPacket p = new InventoryActionPacket(action, machineSlot.slot,
                         machineSlot.getMachineInv().getServerId());
-                PacketDistributor.sendToServer(p);
+                ClientPacketDistributor.sendToServer(p);
             }
 
             return;

@@ -42,7 +42,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import guideme.color.ConstantColor;
 import guideme.document.LytRect;
@@ -331,7 +331,7 @@ public class MEStorageScreen<C extends MEStorageMenu>
 
     private void showCraftingStatus() {
         ServerboundPacket message = SwitchGuisPacket.openSubMenu(CraftingStatusMenu.TYPE);
-        PacketDistributor.sendToServer(message);
+        ClientPacketDistributor.sendToServer(message);
     }
 
     private int getSlotsPerRow() {
@@ -535,7 +535,7 @@ public class MEStorageScreen<C extends MEStorageMenu>
                 int times = (int) Math.abs(deltaY);
                 for (int h = 0; h < times; h++) {
                     final MEInteractionPacket p = new MEInteractionPacket(this.menu.containerId, serial, direction);
-                    PacketDistributor.sendToServer(p);
+                    ClientPacketDistributor.sendToServer(p);
                 }
 
                 return true;
@@ -829,7 +829,7 @@ public class MEStorageScreen<C extends MEStorageMenu>
     private <SE extends Enum<SE>> void toggleServerSetting(SettingToggleButton<SE> btn, boolean backwards) {
         SE next = btn.getNextValue(backwards);
         ServerboundPacket message = new ConfigValuePacket(btn.getSetting(), next);
-        PacketDistributor.sendToServer(message);
+        ClientPacketDistributor.sendToServer(message);
         btn.set(next);
     }
 

@@ -74,9 +74,9 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.model.standalone.StandaloneModelBaker;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import guideme.Guide;
@@ -383,7 +383,7 @@ public class AppEngClient extends AppEngBase {
 
             if (mainHand || offHand) {
                 ServerboundPacket message = new MouseWheelPacket(me.getScrollDeltaY() > 0);
-                PacketDistributor.sendToServer(message);
+                ClientPacketDistributor.sendToServer(message);
                 me.setCanceled(true);
             }
         }
@@ -398,7 +398,7 @@ public class AppEngClient extends AppEngBase {
                 var previousIsDown = player.getData(AEAttachmentTypes.HOLDING_CTRL);
                 if (previousIsDown != isDown) {
                     player.setData(AEAttachmentTypes.HOLDING_CTRL, isDown);
-                    PacketDistributor.sendToServer(new UpdateHoldingCtrlPacket(isDown));
+                    ClientPacketDistributor.sendToServer(new UpdateHoldingCtrlPacket(isDown));
                 }
             }
         }

@@ -8,9 +8,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import appeng.api.parts.IPartHost;
 import appeng.core.network.ServerboundPacket;
@@ -96,14 +96,14 @@ public final class BlockAttackHook {
 
             if (activated) {
                 ServerboundPacket message = new PartLeftClickPacket(hitResult, alternateUseMode);
-                PacketDistributor.sendToServer(message);
+                ClientPacketDistributor.sendToServer(message);
                 // Do not perform the default action (of spawning break particles and breaking the block)
                 return true;
             }
         } else if (p.facade != null) {
             if (p.facade.onClicked(player, localPos)) {
                 ServerboundPacket message = new PartLeftClickPacket(hitResult, false);
-                PacketDistributor.sendToServer(message);
+                ClientPacketDistributor.sendToServer(message);
                 // Do not perform the default action (of spawning break particles and breaking the block)
                 return true;
             }
