@@ -59,14 +59,14 @@ public class StackSizeRenderer {
         final float scaleFactor = largeFonts ? 0.85f : 0.666f;
 
         var stack = guiGraphics.pose();
-        stack.pushPose();
+        stack.pushMatrix();
         // According to ItemRenderer, text is 200 above items.
         stack.translate(0, 0, 200);
         stack.scale(scaleFactor, scaleFactor, scaleFactor);
 
         renderSizeLabel(stack.last().pose(), fontRenderer, xPos, yPos, text, largeFonts);
 
-        stack.popPose();
+        stack.popMatrix();
     }
 
 }

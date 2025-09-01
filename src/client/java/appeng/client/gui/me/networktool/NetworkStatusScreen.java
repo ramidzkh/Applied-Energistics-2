@@ -164,7 +164,7 @@ public class NetworkStatusScreen extends AEBaseScreen<NetworkStatusMenu> {
 
         // Draw the count at half-size
         var poseStack = guiGraphics.pose();
-        poseStack.pushPose();
+        poseStack.pushMatrix();
         poseStack.translate(
                 x - 1 - textWidth,
                 y + (CELL_HEIGHT - textHeight) / 2.0f,
@@ -172,7 +172,7 @@ public class NetworkStatusScreen extends AEBaseScreen<NetworkStatusMenu> {
         poseStack.scale(0.5f, 0.5f, 0.5f);
         guiGraphics.drawString(this.font, str, 0, 0,
                 style.getColor(PaletteColor.DEFAULT_TEXT_COLOR).toARGB(), false);
-        poseStack.popPose();
+        poseStack.popMatrix();
     }
 
     public void processServerUpdate(NetworkStatus status) {

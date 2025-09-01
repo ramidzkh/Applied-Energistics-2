@@ -481,7 +481,7 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
             if (text.getScale() == 1) {
                 guiGraphics.drawString(font, line, x, y, color, false);
             } else {
-                guiGraphics.pose().pushPose();
+                guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(x, y, 1);
                 guiGraphics.pose().scale(scale, scale, 1);
                 guiGraphics.drawString(
@@ -491,7 +491,7 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
                         0,
                         color,
                         false);
-                guiGraphics.pose().popPose();
+                guiGraphics.pose().popMatrix();
             }
             y += text.getScale() * this.font.lineHeight;
         }
