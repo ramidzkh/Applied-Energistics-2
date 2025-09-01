@@ -104,14 +104,12 @@ public class ExecutingCraftingJob {
         this.timeTracker = new ElapsedTimeTracker(data.childOrEmpty(NBT_TIME_TRACKER));
         this.playerId = data.getInt(NBT_PLAYER_ID).orElse(null);
 
-        ListTag tasksTag = data.getListOrEmpty(NBT_TASKS);
-        for (int i = 0; i < tasksTag.size(); ++i) {
-            final CompoundTag item = tasksTag.getCompoundOrEmpty(i);
-            var pattern = AEItemKey.fromTag(registries, item);
-            var details = PatternDetailsHelper.decodePattern(pattern, cpu.cluster.getLevel());
+        // todo: proper codec
+        for (var pair : data.listOrEmpty(NBT_TASKS, Codec.pair(AEItemKey.CODEC, Codec.LONG))) {
+            var details = PatternDetailsHelper.decodePattern(pair.getFirst(), cpu.cluster.getLevel());
             if (details != null) {
                 final TaskProgress tp = new TaskProgress();
-                tp.value = item.getLongOr(NBT_CRAFTING_PROGRESS, 0);
+                tp.value = pair.getSecond();
                 this.tasks.put(details, tp);
             }
         }
@@ -127,13 +125,11 @@ public class ExecutingCraftingJob {
         waitingFor.writeToNBT(data, NBT_WAITING_FOR);
         timeTracker.writeToNBT(data.child(NBT_TIME_TRACKER));
 
-        final ListTag list = new ListTag();
+        // todo: proper codec
+        var list = data.list(NBT_TASKS, Codec.pair(AEItemKey.CODEC, Codec.LONG));
         for (var e : this.tasks.entrySet()) {
-            var item = e.getKey().getDefinition().toTag(registries);
-            item.putLong(NBT_CRAFTING_PROGRESS, e.getValue().value);
-            list.add(item);
+            list.add(new Pair<>(e.getKey().getDefinition(), e.getValue().value));
         }
-        data.put(NBT_TASKS, list);
 
         data.putLong(NBT_REMAINING_AMOUNT, remainingAmount);
         if (this.playerId != null) {

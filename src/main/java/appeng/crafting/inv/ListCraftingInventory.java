@@ -21,8 +21,9 @@ package appeng.crafting.inv;
 import java.util.Map;
 
 import com.google.common.collect.Iterables;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 
-import net.minecraft.nbt.ListTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -86,32 +87,18 @@ public class ListCraftingInventory implements ICraftingInventory {
     public void readFromNBT(ValueInput data, String key) {
         list.clear();
 
-        if (data != null) {
-            for (int i = 0; i < data.size(); ++i) {
-                var compound = data.getCompound(i).orElse(null);
-                if (compound != null) {
-                    var key = AEKey.fromTagGeneric(registries, compound);
-                    if (key != null) {
-                        var amount = compound.getLongOr("#", 0);
-                        insert(key, amount, Actionable.MODULATE);
-                    }
-                }
-            }
+        // todo: proper codec
+        for (var pair : data.listOrEmpty(key, Codec.pair(AEKey.CODEC, Codec.LONG))) {
+            insert(pair.getFirst(), pair.getSecond(), Actionable.MODULATE);
         }
     }
 
     public void writeToNBT(ValueOutput output, String key) {
-        ListTag tag = new ListTag();
+        // todo: proper codec
+        var tag = output.list(key, Codec.pair(AEKey.CODEC, Codec.LONG));
 
         for (var entry : list) {
-            var key = entry.getKey();
-            var amount = entry.getLongValue();
-
-            var entryTag = key.toTagGeneric(registries);
-            entryTag.putLong("#", amount);
-            tag.add(entryTag);
+            tag.add(new Pair<>(entry.getKey(), entry.getValue()));
         }
-
-        return tag;
     }
 }

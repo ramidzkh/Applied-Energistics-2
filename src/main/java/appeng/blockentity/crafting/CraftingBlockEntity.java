@@ -175,7 +175,7 @@ public class CraftingBlockEntity extends AENetworkedBlockEntity
         super.saveAdditional(data);
         data.putBoolean("core", this.isCoreBlock());
         if (this.isCoreBlock() && this.cluster != null) {
-            this.cluster.writeToNBT(data);
+            this.cluster.writeToNBT(data.child("inner"));
         }
     }
 
@@ -185,9 +185,9 @@ public class CraftingBlockEntity extends AENetworkedBlockEntity
         this.setCoreBlock(data.getBooleanOr("core", false));
         if (this.isCoreBlock()) {
             if (this.cluster != null) {
-                this.cluster.readFromNBT(data);
+                this.cluster.readFromNBT(data.child("inner").get());
             } else {
-                this.setPreviousState(data.copy());
+                this.setPreviousState(data.read("inner", CompoundTag.CODEC).get());
             }
         }
     }

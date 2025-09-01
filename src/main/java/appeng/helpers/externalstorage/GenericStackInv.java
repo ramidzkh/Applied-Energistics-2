@@ -19,16 +19,17 @@
 package appeng.helpers.externalstorage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -260,62 +261,31 @@ public class GenericStackInv implements MEStorage, GenericInternalInventory {
         }
     }
 
-    public ListTag writeToTag(HolderLookup.Provider registries) {
-        ListTag tag = new ListTag();
-
-        for (var stack : stacks) {
-            tag.add(GenericStack.writeTag(registries, stack));
-        }
-
-        // Strip out trailing nulls
-        for (int i = tag.size() - 1; i >= 0; i--) {
-            if (tag.getCompound(i).orElseThrow().isEmpty()) {
-                tag.remove(i);
-            } else {
-                break;
-            }
-        }
-
-        return tag;
-    }
-
     public void writeToChildTag(ValueOutput tag, String name) {
-        boolean isEmpty = true;
-        for (var stack : stacks) {
-            if (stack != null) {
-                isEmpty = false;
-                break;
-            }
-        }
+        // todo: proper codec
+        var list = tag.list(name, Codec.pair(Codec.INT, GenericStack.CODEC));
 
-        if (!isEmpty) {
-            tag.put(name, writeToTag(registries));
-        } else {
-            tag.remove(name);
+        for (var i = 0; i < stacks.length; i++) {
+            if (stacks[i] != null) {
+                list.add(new Pair<>(i, stacks[i]));
+            }
         }
     }
 
-    public void readFromTag(ListTag tag, HolderLookup.Provider registries) {
-        boolean changed = false;
-        for (int i = 0; i < Math.min(size(), tag.size()); ++i) {
-            var stackTag = tag.getCompound(i).orElse(null);
-            var stack = stackTag != null ? GenericStack.readTag(registries, stackTag) : null;
-            if (!Objects.equals(stack, stacks[i])) {
-                stacks[i] = stack;
-                changed = true;
-            }
-        }
-        // Ensure any of the remaining slots are cleared
-        for (int i = tag.size(); i < size(); i++) {
-            if (stacks[i] != null) {
-                stacks[i] = null;
-                changed = true;
+    public void readFromChildTag(ValueInput tag, String name) {
+        Arrays.fill(stacks, null);
+
+        // todo: proper codec
+        for (var pair : tag.listOrEmpty(name, Codec.pair(Codec.INT, GenericStack.CODEC))) {
+            var slot = pair.getFirst();
+
+            if (0 <= slot && slot < size()) {
+                stacks[slot] = pair.getSecond();
             }
         }
 
-        if (changed) {
-            onChange();
-        }
+        // todo: only update on change
+        onChange();
     }
 
     /**
@@ -330,15 +300,6 @@ public class GenericStackInv implements MEStorage, GenericInternalInventory {
         }
         if (changed) {
             onChange();
-        }
-    }
-
-    public void readFromChildTag(ValueInput tag, String name) {
-        var contentTag = tag.getList(name);
-        if (contentTag.isPresent()) {
-            readFromTag(contentTag.get(), registries);
-        } else {
-            clear();
         }
     }
 
