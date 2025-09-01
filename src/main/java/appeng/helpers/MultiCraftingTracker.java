@@ -25,6 +25,8 @@ import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.networking.crafting.CalculationStrategy;
 import appeng.api.networking.crafting.ICraftingLink;
@@ -48,7 +50,7 @@ public class MultiCraftingTracker {
         this.size = size;
     }
 
-    public void readFromNBT(CompoundTag extra) {
+    public void readFromNBT(ValueInput extra) {
         for (int x = 0; x < this.size; x++) {
             var link = extra.getCompound("links-" + x).orElse(null);
             if (link != null && !link.isEmpty()) {
@@ -57,7 +59,7 @@ public class MultiCraftingTracker {
         }
     }
 
-    public void writeToNBT(CompoundTag extra) {
+    public void writeToNBT(ValueOutput extra) {
         for (int x = 0; x < this.size; x++) {
             final ICraftingLink link = this.getLink(x);
 

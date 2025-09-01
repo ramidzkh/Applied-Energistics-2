@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -39,6 +38,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.InscriberInputCapacity;
@@ -152,17 +153,17 @@ public class InscriberBlockEntity extends AENetworkedPoweredBlockEntity
     }
 
     @Override
-    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
-        super.saveAdditional(data, registries);
-        this.upgrades.writeToNBT(data, "upgrades", registries);
-        this.configManager.writeToNBT(data, registries);
+    public void saveAdditional(ValueOutput data) {
+        super.saveAdditional(data);
+        this.upgrades.writeToNBT(data, "upgrades");
+        this.configManager.writeToNBT(data);
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.Provider registries) {
-        super.loadTag(data, registries);
-        this.upgrades.readFromNBT(data, "upgrades", registries);
-        this.configManager.readFromNBT(data, registries);
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        this.upgrades.readFromNBT(data, "upgrades");
+        this.configManager.readFromNBT(data);
         // TODO 1.22: Remove compat with old format.
         if ("NO".equals(data.getStringOr("inscriber_buffer_size", ""))) {
             this.configManager.putSetting(Settings.INSCRIBER_INPUT_CAPACITY, InscriberInputCapacity.FOUR);

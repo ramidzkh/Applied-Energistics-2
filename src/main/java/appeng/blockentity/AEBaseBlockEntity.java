@@ -63,6 +63,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.model.data.ModelData;
@@ -135,7 +137,7 @@ public class AEBaseBlockEntity extends BlockEntity
     }
 
     @Override
-    public final void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    protected final void loadAdditional(ValueInput tag) {
         // On the client, this can either be data received as part of an initial chunk update,
         // or as part of a sole block entity data update.
         RegistryAccess registryAccess = null;
@@ -166,17 +168,17 @@ public class AEBaseBlockEntity extends BlockEntity
         tag.getCompound("visual").ifPresent(this::loadVisualState);
 
         super.loadAdditional(tag, registries);
-        loadTag(tag, registries);
+        loadTag(tag);
     }
 
-    public void loadTag(CompoundTag data, HolderLookup.Provider registries) {
+    public void loadTag(ValueInput data) {
         this.customName = data.getString("customName")
                 .map(Component::literal)
                 .orElse(null);
     }
 
     @Override
-    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
+    public void saveAdditional(ValueOutput data) {
         // Save visual state first, so that it can never overwrite normal state
         if (VisualStateSaving.isEnabled(level)) {
             var visualTag = new CompoundTag();
@@ -184,7 +186,7 @@ public class AEBaseBlockEntity extends BlockEntity
             data.put("visual", visualTag);
         }
 
-        super.saveAdditional(data, registries);
+        super.saveAdditional(data);
 
         if (this.customName != null) {
             data.putString("customName", this.customName.getString());
@@ -245,8 +247,7 @@ public class AEBaseBlockEntity extends BlockEntity
      * Used to store the state that is synchronized to clients for the visual appearance of this part as NBT. This is
      * only used to store this state for tools such as Create Ponders in Structure NBT. Actual synchronization uses
      * {@link #writeToStream(RegistryFriendlyByteBuf)} and {@link #readFromStream(RegistryFriendlyByteBuf)}. Any data
-     * that is saved to the NBT tag in {@link #saveAdditional(CompoundTag, HolderLookup.Provider)} does not need to be
-     * saved here again.
+     * that is saved to the NBT tag in {@link #saveAdditional(ValueOutput)} does not need to be saved here again.
      * <p>
      * The data saved should be equivalent to the data sent to the client in {@link #writeToStream}.
      */
@@ -507,7 +508,7 @@ public class AEBaseBlockEntity extends BlockEntity
             Reference2IntMap<IGridNode> nodeIds)
             throws IOException {
         var data = new CompoundTag();
-        saveAdditional(data, registries);
+        saveAdditional(data);
 
         var ops = registries.createSerializationContext(JsonOps.INSTANCE);
         JsonStreamUtil.writeProperties(Map.of(

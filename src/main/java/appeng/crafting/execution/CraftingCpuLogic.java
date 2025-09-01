@@ -26,10 +26,10 @@ import com.google.common.base.Preconditions;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -421,10 +421,10 @@ public class CraftingCpuLogic {
         }
     }
 
-    public void readFromNBT(CompoundTag data, HolderLookup.Provider registries) {
-        this.inventory.readFromNBT(data.getListOrEmpty("inventory"), registries);
+    public void readFromNBT(ValueInput data) {
         if (data.contains("job")) {
             this.job = new ExecutingCraftingJob(data.getCompoundOrEmpty("job"), registries, this::postChange, this);
+        this.inventory.readFromNBT(data, "inventory");
             if (this.job.finalOutput == null) {
                 finishJob(false);
             } else {
@@ -435,10 +435,10 @@ public class CraftingCpuLogic {
         }
     }
 
-    public void writeToNBT(CompoundTag data, HolderLookup.Provider registries) {
-        data.put("inventory", this.inventory.writeToNBT(registries));
+    public void writeToNBT(ValueOutput data) {
+        this.inventory.writeToNBT(data, "inventory");
         if (this.job != null) {
-            data.put("job", this.job.writeToNBT(registries));
+            this.job.writeToNBT(data.child("job"));
         }
     }
 

@@ -84,7 +84,7 @@ class GenericStackInvTest {
     @Test
     void testWritingAnEmptyInventoryProducesNoChildTag() {
         var tag = new CompoundTag();
-        inv.writeToChildTag(tag, "child", registryAccess);
+        inv.writeToChildTag(tag, "child");
         assertEquals(new CompoundTag(), tag);
     }
 
@@ -95,7 +95,7 @@ class GenericStackInvTest {
     void testWritingToChildTag() {
         var tag = new CompoundTag();
         inv.setStack(0, ONE_STICK);
-        inv.writeToChildTag(tag, "child", registryAccess);
+        inv.writeToChildTag(tag, "child");
         assertThat(tag.keySet()).containsOnly("child");
     }
 
@@ -106,10 +106,10 @@ class GenericStackInvTest {
     void testReadingFromChildTag() {
         var tag = new CompoundTag();
         inv.setStack(0, ONE_STICK);
-        inv.writeToChildTag(tag, "child", registryAccess);
+        inv.writeToChildTag(tag, "child");
         inv.clear();
         changeNotifications.set(0);
-        inv.readFromChildTag(tag, "child", registryAccess);
+        inv.readFromChildTag(tag, "child");
 
         assertEquals(ONE_STICK, inv.getStack(0));
         assertEquals(1, changeNotifications.get());
@@ -160,7 +160,7 @@ class GenericStackInvTest {
     @Test
     void testReadingFromMissingChildTag() {
         inv.setStack(0, ONE_STICK);
-        inv.readFromChildTag(new CompoundTag(), "child", registryAccess);
+        inv.readFromChildTag(new CompoundTag(), "child");
         assertNull(inv.getStack(0));
     }
 

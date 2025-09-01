@@ -22,8 +22,9 @@ import java.util.Map;
 
 import com.google.common.collect.Iterables;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
@@ -82,7 +83,7 @@ public class ListCraftingInventory implements ICraftingInventory {
         list.removeZeros();
     }
 
-    public void readFromNBT(ListTag data, HolderLookup.Provider registries) {
+    public void readFromNBT(ValueInput data, String key) {
         list.clear();
 
         if (data != null) {
@@ -99,7 +100,7 @@ public class ListCraftingInventory implements ICraftingInventory {
         }
     }
 
-    public ListTag writeToNBT(HolderLookup.Provider registries) {
+    public void writeToNBT(ValueOutput output, String key) {
         ListTag tag = new ListTag();
 
         for (var entry : list) {

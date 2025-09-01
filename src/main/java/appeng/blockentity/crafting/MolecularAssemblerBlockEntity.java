@@ -24,8 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -36,6 +34,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import appeng.api.config.Actionable;
@@ -225,8 +225,8 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
     }
 
     @Override
-    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
-        super.saveAdditional(data, registries);
+    public void saveAdditional(ValueOutput data) {
+        super.saveAdditional(data);
         if (this.forcePlan) {
             // If the plan is null it means the pattern previously loaded from NBT hasn't been decoded yet
             var pattern = myPlan != null ? myPlan.getDefinition().toStack() : myPattern;
@@ -236,12 +236,12 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
             }
         }
 
-        this.upgrades.writeToNBT(data, "upgrades", registries);
+        this.upgrades.writeToNBT(data, "upgrades");
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.Provider registries) {
-        super.loadTag(data, registries);
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
 
         this.myPlan = null;
         this.myPattern = data.getCompound("myPlan")
@@ -254,7 +254,7 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
             this.forcePlan = false;
         }
 
-        this.upgrades.readFromNBT(data, "upgrades", registries);
+        this.upgrades.readFromNBT(data, "upgrades");
         this.recalculatePlan();
     }
 

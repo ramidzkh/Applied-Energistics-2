@@ -28,9 +28,10 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import it.unimi.dsi.fastutil.objects.Reference2LongArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2LongMap;
@@ -278,7 +279,7 @@ public class GenericStackInv implements MEStorage, GenericInternalInventory {
         return tag;
     }
 
-    public void writeToChildTag(CompoundTag tag, String name, HolderLookup.Provider registries) {
+    public void writeToChildTag(ValueOutput tag, String name) {
         boolean isEmpty = true;
         for (var stack : stacks) {
             if (stack != null) {
@@ -332,7 +333,7 @@ public class GenericStackInv implements MEStorage, GenericInternalInventory {
         }
     }
 
-    public void readFromChildTag(CompoundTag tag, String name, HolderLookup.Provider registries) {
+    public void readFromChildTag(ValueInput tag, String name) {
         var contentTag = tag.getList(name);
         if (contentTag.isPresent()) {
             readFromTag(contentTag.get(), registries);

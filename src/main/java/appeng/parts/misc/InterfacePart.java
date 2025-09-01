@@ -22,11 +22,11 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import appeng.api.inventories.InternalInventory;
@@ -88,15 +88,15 @@ public class InterfacePart extends AEBasePart implements InterfaceLogicHost {
     }
 
     @Override
-    public void readFromNBT(CompoundTag data, HolderLookup.Provider registries) {
-        super.readFromNBT(data, registries);
-        this.logic.readFromNBT(data, registries);
+    public void readFromNBT(ValueInput data) {
+        super.readFromNBT(data);
+        this.logic.readFromNBT(data);
     }
 
     @Override
-    public void writeToNBT(CompoundTag data, HolderLookup.Provider registries) {
-        super.writeToNBT(data, registries);
-        this.logic.writeToNBT(data, registries);
+    public void writeToNBT(ValueOutput data) {
+        super.writeToNBT(data);
+        this.logic.writeToNBT(data);
     }
 
     @Override

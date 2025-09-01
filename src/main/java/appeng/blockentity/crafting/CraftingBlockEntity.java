@@ -26,7 +26,6 @@ import java.util.Set;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
@@ -36,6 +35,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.model.data.ModelData;
 
 import appeng.api.implementations.IPowerChannelState;
@@ -170,21 +171,21 @@ public class CraftingBlockEntity extends AENetworkedBlockEntity
     }
 
     @Override
-    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
-        super.saveAdditional(data, registries);
+    public void saveAdditional(ValueOutput data) {
+        super.saveAdditional(data);
         data.putBoolean("core", this.isCoreBlock());
         if (this.isCoreBlock() && this.cluster != null) {
-            this.cluster.writeToNBT(data, registries);
+            this.cluster.writeToNBT(data);
         }
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.Provider registries) {
-        super.loadTag(data, registries);
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
         this.setCoreBlock(data.getBooleanOr("core", false));
         if (this.isCoreBlock()) {
             if (this.cluster != null) {
-                this.cluster.readFromNBT(data, registries);
+                this.cluster.readFromNBT(data);
             } else {
                 this.setPreviousState(data.copy());
             }

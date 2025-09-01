@@ -45,6 +45,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.model.data.ModelData;
 
@@ -191,7 +193,7 @@ public abstract class AEBasePart
     }
 
     @Override
-    public void readFromNBT(CompoundTag data, HolderLookup.Provider registries) {
+    public void readFromNBT(ValueInput data) {
         this.mainNode.loadFromNBT(data);
 
         if (data.contains("customName")) {
@@ -205,7 +207,7 @@ public abstract class AEBasePart
     }
 
     @Override
-    public void writeToNBT(CompoundTag data, HolderLookup.Provider registries) {
+    public void writeToNBT(ValueOutput data) {
         this.mainNode.saveToNBT(data);
 
         if (this.customName != null) {
@@ -248,8 +250,8 @@ public abstract class AEBasePart
      * Used to store the state that is synchronized to clients for the visual appearance of this part as NBT. This is
      * only used to store this state for tools such as Create Ponders in Structure NBT. Actual synchronization uses
      * {@link IPart#writeToStream(RegistryFriendlyByteBuf)} and {@link IPart#readFromStream(RegistryFriendlyByteBuf)}.
-     * Any data that is saved to the NBT tag in {@link IPart#writeToNBT(CompoundTag, HolderLookup.Provider)} already
-     * does not need to be saved here again.
+     * Any data that is saved to the NBT tag in {@link IPart#writeToNBT(ValueOutput)} already does not need to be saved
+     * here again.
      */
     @MustBeInvokedByOverriders
     @Override

@@ -25,12 +25,13 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.inventories.BaseInternalInventory;
 import appeng.util.inv.filter.IAEItemFilter;
@@ -159,7 +160,7 @@ public class AppEngInternalInventory extends BaseInternalInventory {
         contents.copyInto(stacks);
     }
 
-    public void writeToNBT(CompoundTag data, String name, HolderLookup.Provider registries) {
+    public void writeToNBT(ValueOutput data, String name) {
         if (isEmpty()) {
             data.remove(name);
             return;
@@ -177,7 +178,7 @@ public class AppEngInternalInventory extends BaseInternalInventory {
         data.put(name, items);
     }
 
-    public void readFromNBT(CompoundTag data, String name, HolderLookup.Provider registries) {
+    public void readFromNBT(ValueInput data, String name) {
         if (data.contains(name)) {
             var tagList = data.getListOrEmpty(name);
             for (var itemTag : tagList) {

@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -34,6 +33,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.model.data.ModelData;
 
 import appeng.api.behaviors.PickupStrategy;
@@ -105,8 +106,8 @@ public class AnnihilationPlanePart extends AEBasePart implements IGridTickable {
     }
 
     @Override
-    public void readFromNBT(CompoundTag data, HolderLookup.Provider registries) {
-        super.readFromNBT(data, registries);
+    public void readFromNBT(ValueInput data) {
+        super.readFromNBT(data);
 
         var enchantmentsTag = data.getCompound("enchantments");
         var ops = registries.createSerializationContext(NbtOps.INSTANCE);
@@ -121,8 +122,8 @@ public class AnnihilationPlanePart extends AEBasePart implements IGridTickable {
     }
 
     @Override
-    public void writeToNBT(CompoundTag data, HolderLookup.Provider registries) {
-        super.writeToNBT(data, registries);
+    public void writeToNBT(ValueOutput data) {
+        super.writeToNBT(data);
 
         var ops = registries.createSerializationContext(NbtOps.INSTANCE);
         var enchantmentsTag = ItemEnchantments.CODEC.encodeStart(ops, enchantments).getOrThrow();

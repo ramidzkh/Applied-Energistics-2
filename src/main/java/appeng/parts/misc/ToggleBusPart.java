@@ -21,11 +21,12 @@ package appeng.parts.misc;
 import java.util.EnumSet;
 
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.model.data.ModelData;
 
 import appeng.api.networking.GridFlags;
@@ -111,14 +112,14 @@ public class ToggleBusPart extends AEBasePart {
     }
 
     @Override
-    public void readFromNBT(CompoundTag extra, HolderLookup.Provider registries) {
-        super.readFromNBT(extra, registries);
+    public void readFromNBT(ValueInput extra) {
+        super.readFromNBT(extra);
         this.getOuterNode().loadFromNBT(extra);
     }
 
     @Override
-    public void writeToNBT(CompoundTag extra, HolderLookup.Provider registries) {
-        super.writeToNBT(extra, registries);
+    public void writeToNBT(ValueOutput extra) {
+        super.writeToNBT(extra);
         this.getOuterNode().saveToNBT(extra);
     }
 

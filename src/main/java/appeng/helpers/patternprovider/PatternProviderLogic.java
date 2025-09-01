@@ -30,9 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -42,6 +40,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.LockCraftingMode;
@@ -160,9 +160,9 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         ICraftingProvider.requestUpdate(mainNode);
     }
 
-    public void writeToNBT(CompoundTag tag, HolderLookup.Provider registries) {
-        this.configManager.writeToNBT(tag, registries);
-        this.patternInventory.writeToNBT(tag, NBT_MEMORY_CARD_PATTERNS, registries);
+    public void writeToNBT(ValueOutput tag) {
+        this.configManager.writeToNBT(tag);
+        this.patternInventory.writeToNBT(tag, NBT_MEMORY_CARD_PATTERNS);
         tag.putInt(NBT_PRIORITY, this.priority);
         if (unlockEvent == UnlockCraftingEvent.REDSTONE_POWER) {
             tag.putByte(NBT_UNLOCK_EVENT, (byte) 1);
@@ -189,9 +189,9 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         tag.put(NBT_RETURN_INV, this.returnInv.writeToTag(registries));
     }
 
-    public void readFromNBT(CompoundTag tag, HolderLookup.Provider registries) {
-        this.configManager.readFromNBT(tag, registries);
-        this.patternInventory.readFromNBT(tag, NBT_MEMORY_CARD_PATTERNS, registries);
+    public void readFromNBT(ValueInput tag) {
+        this.configManager.readFromNBT(tag);
+        this.patternInventory.readFromNBT(tag, NBT_MEMORY_CARD_PATTERNS);
         this.priority = tag.getIntOr(NBT_PRIORITY, 0);
 
         var unlockEventType = tag.getByteOr(NBT_UNLOCK_EVENT, (byte) 0);

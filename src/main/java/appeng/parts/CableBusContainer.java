@@ -44,6 +44,8 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -784,10 +786,10 @@ public class CableBusContainer implements AEMultiBlockEntity, ICableBusContainer
         return side == null ? 6 : side.ordinal();
     }
 
-    public void writeToNBT(CompoundTag data, HolderLookup.Provider registries) {
+    public void writeToNBT(ValueOutput data) {
         data.putInt("hasRedstone", this.hasRedstone.ordinal());
 
-        getFacadeContainer().writeToNBT(data, registries);
+        getFacadeContainer().writeToNBT(data);
 
         var saveVisualState = VisualStateSaving.isEnabled(getBlockEntity().getLevel());
 
@@ -803,7 +805,7 @@ public class CableBusContainer implements AEMultiBlockEntity, ICableBusContainer
                     partData.put("visual", visualTag);
                 }
 
-                part.writeToNBT(partData, registries);
+                part.writeToNBT(partData);
                 if (partData.contains("id")) {
                     throw new IllegalStateException("Part " + part + " used the reserved 'id' field to store its data");
                 }
@@ -815,7 +817,7 @@ public class CableBusContainer implements AEMultiBlockEntity, ICableBusContainer
         }
     }
 
-    public void readFromNBT(CompoundTag data, HolderLookup.Provider registries) {
+    public void readFromNBT(ValueInput data) {
         invalidateShapes();
 
         if (data.contains("hasRedstone")) {
@@ -835,10 +837,10 @@ public class CableBusContainer implements AEMultiBlockEntity, ICableBusContainer
             this.removePartFromSide(side);
         }
 
-        this.getFacadeContainer().readFromNBT(data, registries);
+        this.getFacadeContainer().readFromNBT(data);
     }
 
-    private boolean loadPart(Direction side, CompoundTag data, HolderLookup.Provider registries) {
+    private boolean loadPart(Direction side, ValueInput data) {
         var itemId = ResourceLocation.parse(data.getStringOr("id", ""));
         var partItem = IPartItem.byId(itemId);
         if (partItem == null) {
@@ -848,11 +850,11 @@ public class CableBusContainer implements AEMultiBlockEntity, ICableBusContainer
 
         var p = this.getPart(side);
         if (p != null && p.getPartItem() == partItem) {
-            p.readFromNBT(data, registries);
+            p.readFromNBT(data);
         } else {
             p = this.replacePart(partItem, side, null, null);
             if (p != null) {
-                p.readFromNBT(data, registries);
+                p.readFromNBT(data);
             } else {
                 AELog.warn("Invalid NBT For CableBus Container: " + itemId
                         + " is not a valid part; it was ignored.");

@@ -86,7 +86,7 @@ public class ExecutingCraftingJob {
         this.playerId = playerId;
     }
 
-    ExecutingCraftingJob(CompoundTag data, HolderLookup.Provider registries,
+    ExecutingCraftingJob(ValueInput data,
             CraftingDifferenceListener postCraftingDifference, CraftingCpuLogic cpu) {
         this.link = new CraftingLink(data.getCompoundOrEmpty(NBT_LINK), cpu.cluster);
         IGrid grid = cpu.cluster.getGrid();
@@ -114,9 +114,7 @@ public class ExecutingCraftingJob {
         }
     }
 
-    CompoundTag writeToNBT(HolderLookup.Provider registries) {
-        CompoundTag data = new CompoundTag();
-
+    void writeToNBT(ValueOutput data) {
         CompoundTag linkData = new CompoundTag();
         link.writeToNBT(linkData);
         data.put(NBT_LINK, linkData);
@@ -138,8 +136,6 @@ public class ExecutingCraftingJob {
         if (this.playerId != null) {
             data.putInt(NBT_PLAYER_ID, this.playerId);
         }
-
-        return data;
     }
 
     static class TaskProgress {

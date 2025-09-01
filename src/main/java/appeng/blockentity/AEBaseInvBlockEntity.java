@@ -24,12 +24,13 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import appeng.api.inventories.InternalInventory;
@@ -44,8 +45,8 @@ public abstract class AEBaseInvBlockEntity extends AEBaseBlockEntity implements 
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.Provider registries) {
-        super.loadTag(data, registries);
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
         var inv = this.getInternalInventory();
         if (inv != InternalInventory.empty()) {
             var opt = data.getCompound("inv").orElse(null);
@@ -65,8 +66,8 @@ public abstract class AEBaseInvBlockEntity extends AEBaseBlockEntity implements 
     public abstract InternalInventory getInternalInventory();
 
     @Override
-    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
-        super.saveAdditional(data, registries);
+    public void saveAdditional(ValueOutput data) {
+        super.saveAdditional(data);
         var inv = this.getInternalInventory();
         if (inv != InternalInventory.empty()) {
             final CompoundTag opt = new CompoundTag();

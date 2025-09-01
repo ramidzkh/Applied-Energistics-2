@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.ids.AEComponents;
 import appeng.api.stacks.AEKeyType;
@@ -87,7 +87,7 @@ public class KeyTypeSelection {
         return keyType -> keyTypes.getOrDefault(keyType, Boolean.FALSE);
     }
 
-    public void writeToNBT(CompoundTag tag) {
+    public void writeToNBT(ValueOutput tag) {
         ListTag enabledKeyTypesTag = new ListTag();
         for (var entry : keyTypes.entrySet()) {
             if (entry.getValue()) {
@@ -97,7 +97,7 @@ public class KeyTypeSelection {
         tag.put("enabledKeyTypes", enabledKeyTypesTag);
     }
 
-    public void readFromNBT(CompoundTag tag, HolderLookup.Provider registries) {
+    public void readFromNBT(ValueInput tag) {
         for (var entry : keyTypes.entrySet()) {
             entry.setValue(false);
         }

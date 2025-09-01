@@ -27,11 +27,11 @@ import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
@@ -147,21 +147,21 @@ public class InterfaceLogic implements ICraftingRequester, IUpgradeableObject, I
         this.notifyNeighbors();
     }
 
-    public void writeToNBT(CompoundTag tag, HolderLookup.Provider registries) {
-        this.config.writeToChildTag(tag, "config", registries);
-        this.storage.writeToChildTag(tag, "storage", registries);
-        this.upgrades.writeToNBT(tag, "upgrades", registries);
-        this.cm.writeToNBT(tag, registries);
+    public void writeToNBT(ValueOutput tag) {
+        this.config.writeToChildTag(tag, "config");
+        this.storage.writeToChildTag(tag, "storage");
+        this.upgrades.writeToNBT(tag, "upgrades");
+        this.cm.writeToNBT(tag);
         this.craftingTracker.writeToNBT(tag);
         tag.putInt("priority", this.priority);
     }
 
-    public void readFromNBT(CompoundTag tag, HolderLookup.Provider registries) {
+    public void readFromNBT(ValueInput tag) {
         this.craftingTracker.readFromNBT(tag);
-        this.upgrades.readFromNBT(tag, "upgrades", registries);
-        this.config.readFromChildTag(tag, "config", registries);
-        this.storage.readFromChildTag(tag, "storage", registries);
-        this.cm.readFromNBT(tag, registries);
+        this.upgrades.readFromNBT(tag, "upgrades");
+        this.config.readFromChildTag(tag, "config");
+        this.storage.readFromChildTag(tag, "storage");
+        this.cm.readFromNBT(tag);
         this.readConfig();
         this.priority = tag.getIntOr("priority", 0);
     }

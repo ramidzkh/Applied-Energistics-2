@@ -26,14 +26,14 @@ import org.apache.commons.lang3.StringUtils;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import appeng.api.parts.IFacadeContainer;
 import appeng.api.parts.IFacadePart;
@@ -91,7 +91,7 @@ public class FacadeContainer implements IFacadeContainer {
     }
 
     @Override
-    public void readFromNBT(CompoundTag c, HolderLookup.Provider registries) {
+    public void readFromNBT(ValueInput c) {
         for (var side : Direction.values()) {
             this.storage.removeFacade(side);
 
@@ -105,7 +105,7 @@ public class FacadeContainer implements IFacadeContainer {
     }
 
     @Override
-    public void writeToNBT(CompoundTag c, HolderLookup.Provider registries) {
+    public void writeToNBT(ValueOutput c) {
         for (var side : Direction.values()) {
             if (this.storage.getFacade(side) != null) {
                 var data = BlockState.CODEC.encodeStart(NbtOps.INSTANCE, this.storage.getFacade(side).getBlockState())
