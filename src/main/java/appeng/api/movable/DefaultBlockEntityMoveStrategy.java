@@ -47,7 +47,7 @@ public abstract class DefaultBlockEntityMoveStrategy implements IBlockEntityMove
     @Nullable
     @Override
     public CompoundTag beginMove(BlockEntity blockEntity, HolderLookup.Provider registries) {
-        return blockEntity.saveWithId(registries);
+        return blockEntity.saveWithFullMetadata(registries);
     }
 
     @Override

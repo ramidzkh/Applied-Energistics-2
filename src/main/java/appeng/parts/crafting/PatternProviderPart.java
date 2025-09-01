@@ -137,7 +137,7 @@ public class PatternProviderPart extends AEBasePart implements PatternProviderLo
 
     @Override
     public boolean onUseWithoutItem(Player p, Vec3 pos) {
-        if (!p.getCommandSenderWorld().isClientSide()) {
+        if (!p.level().isClientSide()) {
             openMenu(p, MenuLocators.forPart(this));
         }
         return true;

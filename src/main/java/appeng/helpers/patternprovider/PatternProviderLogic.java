@@ -618,7 +618,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
 
                 // Don't restore junk
                 var pattern = PatternDetailsHelper.decodePattern(desiredPatterns.getStackInSlot(i),
-                        serverPlayer.serverLevel());
+                        serverPlayer.level());
                 if (pattern == null) {
                     continue; // Skip junk / broken recipes
                 }

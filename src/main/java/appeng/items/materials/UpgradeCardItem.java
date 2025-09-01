@@ -101,7 +101,7 @@ public class UpgradeCardItem extends AEBaseItem {
                     return InteractionResult.FAIL;
                 }
 
-                if (player.getCommandSenderWorld().isClientSide()) {
+                if (player.level().isClientSide()) {
                     return InteractionResult.PASS;
                 }
 

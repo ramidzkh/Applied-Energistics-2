@@ -859,7 +859,7 @@ public abstract class AEBaseMenu extends AbstractContainerMenu {
      * Returns whether this menu instance lives on the client.
      */
     public boolean isClientSide() {
-        return getPlayer().getCommandSenderWorld().isClientSide();
+        return getPlayer().level().isClientSide();
     }
 
     /**
