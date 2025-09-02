@@ -481,7 +481,7 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
                 guiGraphics.drawString(font, line, x, y, color, false);
             } else {
                 guiGraphics.pose().pushMatrix();
-                guiGraphics.pose().translate(x, y, 1);
+                guiGraphics.pose().translate(x, y);
                 guiGraphics.pose().scale(scale);
                 guiGraphics.drawString(
                         font,

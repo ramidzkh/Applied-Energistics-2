@@ -60,8 +60,6 @@ public class StackSizeRenderer {
 
         var stack = guiGraphics.pose();
         stack.pushMatrix();
-        // According to ItemRenderer, text is 200 above items.
-        stack.translate(0, 0, 200);
         stack.scale(scaleFactor);
 
         renderSizeLabel(stack.last().pose(), fontRenderer, xPos, yPos, text, largeFonts);

@@ -28,7 +28,7 @@ public final class AERenderTypes {
                     .setOutputState(ITEM_ENTITY_TARGET)
                     .createCompositeState(false));
 
-    public static final RenderType SPATIAL_SKYBOX = RenderType.CompositeRenderType.create(
+    public static final RenderType SPATIAL_SKYBOX = RenderType.create(
             "ae2_spatial_sky_skybox",
             8192,
             AERenderPipelines.SPATIAL_SKYBOX,
@@ -40,7 +40,7 @@ public final class AERenderTypes {
     /**
      * This is based on the area render of https://github.com/TeamPneumatic/pnc-repressurized/
      */
-    public static final RenderType AREA_OVERLAY_FACE = RenderType.CompositeRenderType.create(
+    public static final RenderType AREA_OVERLAY_FACE = RenderType.create(
             "ae2_area_overlay_face",
             65535,
             AERenderPipelines.AREA_OVERLAY_FACE,
@@ -48,7 +48,7 @@ public final class AERenderTypes {
                     .setTextureState(RenderStateShard.EmptyTextureStateShard.NO_TEXTURE)
                     .setLightmapState(RenderStateShard.LightmapStateShard.NO_LIGHTMAP)
                     .createCompositeState(false));
-    public static final RenderType AREA_OVERLAY_LINE = RenderType.CompositeRenderType.create(
+    public static final RenderType AREA_OVERLAY_LINE = RenderType.create(
             "ae2_area_overlay_line",
             65535,
             AERenderPipelines.AREA_OVERLAY_LINE,
@@ -57,7 +57,7 @@ public final class AERenderTypes {
                     .setLightmapState(NO_LIGHTMAP)
                     .createCompositeState(false));
 
-    public static final RenderType AREA_OVERLAY_LINE_OCCLUDED = RenderType.CompositeRenderType.create(
+    public static final RenderType AREA_OVERLAY_LINE_OCCLUDED = RenderType.create(
             "ae2_area_overlay_line_occluded",
             65535,
             AERenderPipelines.AREA_OVERLAY_LINE_OCCLUDED,

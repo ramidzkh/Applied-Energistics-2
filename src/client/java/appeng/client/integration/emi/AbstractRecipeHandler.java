@@ -274,13 +274,9 @@ abstract class AbstractRecipeHandler<T extends AEBaseMenu> implements StandardRe
                 for (var widget : widgets) {
                     if (widget instanceof SlotWidget slot && isInputSlot(slot)) {
                         if (isCraftable(craftableKeys, slot.getStack())) {
-                            var poseStack = guiGraphics.pose();
-                            poseStack.pushMatrix();
-                            poseStack.translate(0, 0, 400);
                             var bounds = getInnerBounds(slot);
                             guiGraphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(),
                                     BLUE_SLOT_HIGHLIGHT_COLOR);
-                            poseStack.popMatrix();
                         }
                     }
                 }
@@ -352,13 +348,9 @@ abstract class AbstractRecipeHandler<T extends AEBaseMenu> implements StandardRe
             boolean missing = missingSlots.contains(entry.getKey());
             boolean craftable = craftableSlots.contains(entry.getKey());
             if (missing || craftable) {
-                var poseStack = guiGraphics.pose();
-                poseStack.pushMatrix();
-                poseStack.translate(0, 0, 400);
                 var innerBounds = getInnerBounds(entry.getValue());
                 guiGraphics.fill(innerBounds.x(), innerBounds.y(), innerBounds.right(),
                         innerBounds.bottom(), missing ? RED_SLOT_HIGHLIGHT_COLOR : BLUE_SLOT_HIGHLIGHT_COLOR);
-                poseStack.popMatrix();
             }
         }
     }

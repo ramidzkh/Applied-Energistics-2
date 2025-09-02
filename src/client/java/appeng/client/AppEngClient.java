@@ -73,7 +73,7 @@ import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.model.standalone.StandaloneModelBaker;
+import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -657,13 +657,15 @@ public class AppEngClient extends AppEngBase {
     }
 
     private void registerStandaloneModels(ModelEvent.RegisterStandalone event) {
-        event.register(CrankRenderer.HANDLE_MODEL, StandaloneModelBaker.simpleModelWrapper());
+        event.register(CrankRenderer.HANDLE_MODEL, SimpleUnbakedStandaloneModel.simpleModelWrapper(CrankRenderer.id));
 
         // For rendering the ME chest we require the original storage cell models as standalone models
-        for (var cellModelKey : StorageCellModels.standaloneModels().values()) {
-            event.register(cellModelKey, StandaloneModelBaker.simpleModelWrapper());
+        for (var entry : StorageCellModels.standaloneModels().entrySet()) {
+            event.register(entry.getValue(),
+                    SimpleUnbakedStandaloneModel.simpleModelWrapper(StorageCellModels.model(entry.getKey())));
         }
-        event.register(StorageCellModels.getDefaultStandaloneModel(), StandaloneModelBaker.simpleModelWrapper());
+        event.register(StorageCellModels.getDefaultStandaloneModel(),
+                SimpleUnbakedStandaloneModel.simpleModelWrapper(StorageCellModels.getDefaultModel()));
     }
 
     private void registerItemModelProperties(RegisterRangeSelectItemModelPropertyEvent event) {

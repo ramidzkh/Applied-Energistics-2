@@ -103,7 +103,7 @@ public class TabButton extends Button implements ITooltip {
             if (this.item != null) {
                 var pose = guiGraphics.pose();
                 pose.pushMatrix();
-                pose.translate(0f, -1f, 100);
+                pose.translate(0f, -1f);
                 guiGraphics.renderItem(this.item, getX() + iconX, getY() + iconY);
                 var font = Minecraft.getInstance().font;
                 guiGraphics.renderItemDecorations(font, this.item, getX() + iconX, getY() + iconY);

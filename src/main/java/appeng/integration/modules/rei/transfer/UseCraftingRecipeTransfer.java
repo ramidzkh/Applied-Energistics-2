@@ -152,13 +152,9 @@ public class UseCraftingRecipeTransfer<T extends CraftingTermMenu> extends Abstr
                     boolean craftable = indices.craftableSlots().contains(i);
                     i++;
                     if (missing || craftable) {
-                        var poseStack = guiGraphics.pose();
-                        poseStack.pushMatrix();
-                        poseStack.translate(0, 0, 400);
                         Rectangle innerBounds = slot.getInnerBounds();
                         guiGraphics.fill(innerBounds.x, innerBounds.y, innerBounds.getMaxX(),
                                 innerBounds.getMaxY(), missing ? RED_SLOT_HIGHLIGHT_COLOR : BLUE_SLOT_HIGHLIGHT_COLOR);
-                        poseStack.popMatrix();
                     }
                 }
             }

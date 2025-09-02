@@ -157,11 +157,7 @@ public class PatternEncodingTermScreen<C extends PatternEncodingTermMenu> extend
         super.renderSlot(guiGraphics, s);
 
         if (shouldShowCraftableIndicatorForSlot(s)) {
-            var poseStack = guiGraphics.pose();
-            poseStack.pushMatrix();
-            poseStack.translate(0, 0, 100); // Items are rendered with offset of 100, offset text too.
             StackSizeRenderer.renderSizeLabel(guiGraphics, this.font, s.x - 11, s.y - 11, "+", false);
-            poseStack.popMatrix();
         }
     }
 
