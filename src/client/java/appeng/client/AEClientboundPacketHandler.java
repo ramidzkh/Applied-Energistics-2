@@ -193,7 +193,7 @@ public class AEClientboundPacketHandler {
 
     public void handleMolecularAssemblerAnimationPacket(MolecularAssemblerAnimationPacket packet, Minecraft minecraft,
             Player player) {
-        BlockEntity te = player.getCommandSenderWorld().getBlockEntity(packet.pos());
+        BlockEntity te = player.level().getBlockEntity(packet.pos());
         if (te instanceof MolecularAssemblerBlockEntity ma) {
             ma.setAnimationStatus(
                     new MolecularAssemblerAnimationStatus(packet.rate(), packet.what().wrapForDisplayOrFilter()));
@@ -243,7 +243,7 @@ public class AEClientboundPacketHandler {
     }
 
     public void handleMockExplosionPacket(MockExplosionPacket packet, Minecraft minecraft, Player player) {
-        final Level level = player.getCommandSenderWorld();
+        final Level level = player.level();
         level.addParticle(net.minecraft.core.particles.ParticleTypes.EXPLOSION, packet.x(), packet.y(), packet.z(),
                 1.0D, 0.0D, 0.0D);
 
@@ -252,7 +252,7 @@ public class AEClientboundPacketHandler {
     public void handleLightningPacket(LightningPacket packet, Minecraft minecraft, Player player) {
         try {
             if (AEConfig.instance().isEnableEffects()) {
-                player.getCommandSenderWorld().addParticle(ParticleTypes.LIGHTNING, packet.x(), packet.y(), packet.z(),
+                player.level().addParticle(ParticleTypes.LIGHTNING, packet.x(), packet.y(), packet.z(),
                         0.0f, 0.0f,
                         0.0f);
             }

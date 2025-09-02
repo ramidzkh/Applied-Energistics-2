@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -613,7 +613,7 @@ public class PatternAccessTermScreen<C extends PatternAccessTermMenu> extends AE
     private void blit(GuiGraphics guiGraphics, int offsetX, int offsetY, Rect2i srcRect) {
         var texture = AppEng.makeId("textures/guis/patternaccessterminal.png");
         guiGraphics.blit(
-                RenderType::guiTextured,
+                RenderPipelines.GUI_TEXTURED,
                 texture,
                 offsetX,
                 offsetY,

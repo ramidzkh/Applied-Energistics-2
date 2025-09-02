@@ -143,7 +143,7 @@ public class MemoryCardItem extends AEBaseItem implements IMemoryCard {
             @Nullable Player player) {
         var imported = importGenericSettings(importTo, input, player);
 
-        if (player != null && !player.getCommandSenderWorld().isClientSide()) {
+        if (player != null && !player.level().isClientSide()) {
             if (imported.isEmpty()) {
                 player.displayClientMessage(PlayerMessages.InvalidMachine.text(), true);
             } else {
@@ -299,7 +299,7 @@ public class MemoryCardItem extends AEBaseItem implements IMemoryCard {
 
     @Override
     public void notifyUser(Player player, MemoryCardMessages msg) {
-        if (player.getCommandSenderWorld().isClientSide()) {
+        if (player.level().isClientSide()) {
             return;
         }
 

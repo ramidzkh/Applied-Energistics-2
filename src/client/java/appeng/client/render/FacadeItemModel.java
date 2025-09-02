@@ -132,10 +132,8 @@ public class FacadeItemModel implements ItemModel {
                     packedLight,
             };
             for (var blockModelPart : blockModelParts) {
-                var renderType = blockModelPart.getRenderType(blockState);
-                if (renderType.getChunkLayerId() != -1) {
-                    renderType = RenderTypeHelper.getEntityRenderType(renderType);
-                }
+                var chunkSectionLayer = blockModelPart.getRenderType(blockState);
+                var renderType = RenderTypeHelper.getEntityRenderType(chunkSectionLayer);
                 var buffer = bufferSource.getBuffer(renderType);
                 for (int cullFaceIdx = 0; cullFaceIdx <= ModelHelper.NULL_FACE_ID; cullFaceIdx++) {
                     var cullFace = ModelHelper.faceFromIndex(cullFaceIdx);

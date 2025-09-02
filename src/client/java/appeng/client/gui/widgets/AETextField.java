@@ -31,7 +31,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
@@ -195,7 +195,7 @@ public class AETextField extends EditBox implements IResizableWidget, ITooltip {
         endX = Mth.clamp(endX, getX(), getX() + this.width);
         startX = Mth.clamp(startX, getX(), getX() + this.width);
 
-        guiGraphics.fill(RenderType.guiTextHighlight(), startX, startY, endX, endY, this.selectionColor);
+        guiGraphics.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, startX, startY, endX, endY, this.selectionColor);
     }
 
     @Override

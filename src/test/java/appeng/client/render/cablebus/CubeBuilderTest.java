@@ -45,9 +45,8 @@ class CubeBuilderTest {
             var quad = output.get(0);
             assertEquals(side, quad.direction());
 
-            var fb = new FaceBakery();
             var rewinded = quad.vertices().clone();
-            fb.recalculateWinding(rewinded, side);
+            FaceBakery.recalculateWinding(rewinded, side);
 
             assertThat(getVertexOrder(rewinded, quad.vertices()))
                     .containsExactly(0, 1, 2, 3);

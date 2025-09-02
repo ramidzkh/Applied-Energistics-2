@@ -40,7 +40,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import net.minecraft.util.TriState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -63,7 +62,7 @@ public final class Blitter {
                     1536,
                     GUI_TEXTURED_OPAQUE,
                     RenderType.CompositeState.builder()
-                            .setTextureState(new RenderStateShard.TextureStateShard(textureId, TriState.DEFAULT, false))
+                            .setTextureState(new RenderStateShard.TextureStateShard(textureId, false))
                             .createCompositeState(false)));
 
     // This assumption is obviously bogus, but currently all textures are this size,

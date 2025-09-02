@@ -26,7 +26,7 @@ public class SavedBlockEntity {
         if (be == null) {
             throw helper.assertionException(pos, "No BlockEntity");
         }
-        data = be.saveWithId(helper.getLevel().registryAccess());
+        data = be.saveWithFullMetadata(helper.getLevel().registryAccess());
     }
 
     public void saveAndRemove(BlockPos pos) {

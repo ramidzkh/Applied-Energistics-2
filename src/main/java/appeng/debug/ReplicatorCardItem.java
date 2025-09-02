@@ -192,7 +192,7 @@ public class ReplicatorCardItem extends AEBaseItem {
                                                     level.setBlockAndUpdate(d, state);
                                                     if (state.hasBlockEntity()) {
                                                         final BlockEntity ote = src_w.getBlockEntity(p);
-                                                        var data = ote.saveWithId(level.registryAccess());
+                                                        var data = ote.saveWithFullMetadata(level.registryAccess());
                                                         var newBe = BlockEntity.loadStatic(d, state, data,
                                                                 level.registryAccess());
                                                         if (newBe != null) {

@@ -45,7 +45,6 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -481,9 +480,9 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
             if (text.getScale() == 1) {
                 guiGraphics.drawString(font, line, x, y, color, false);
             } else {
-                guiGraphics.pose().pushPose();
+                guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(x, y, 1);
-                guiGraphics.pose().scale(scale, scale, 1);
+                guiGraphics.pose().scale(scale);
                 guiGraphics.drawString(
                         font,
                         line,
@@ -491,7 +490,7 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
                         0,
                         color,
                         false);
-                guiGraphics.pose().popPose();
+                guiGraphics.pose().popMatrix();
             }
             y += text.getScale() * this.font.lineHeight;
         }
@@ -1001,7 +1000,7 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
         guiGraphics.hLine(x - 1, x + w, y + h, 0xFFdaffff);
         guiGraphics.vLine(x - 1, y - 2, y + h, 0xFFdaffff);
         guiGraphics.vLine(x + w, y - 2, y + h, 0xFFdaffff);
-        guiGraphics.fillGradient(RenderType.guiOverlay(), x, y, x + w, y + h, 0x669cd3ff, 0x669cd3ff, 0);
+        guiGraphics.fillGradient(x, y, x + w, y + h, 0x669cd3ff, 0x669cd3ff);
     }
 
     public final void switchToScreen(AEBaseScreen<?> screen) {

@@ -66,7 +66,7 @@ public class SpatialSkyRender implements AutoCloseable {
             new Quaternionf().rotationZ(Mth.DEG_TO_RAD * 90.0F),
             new Quaternionf().rotationZ(Mth.DEG_TO_RAD * -90.0F), };
 
-    public void render(Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
+    public void render(Matrix4f modelViewMatrix) {
         var poseStack = new PoseStack();
         poseStack.mulPose(modelViewMatrix);
 

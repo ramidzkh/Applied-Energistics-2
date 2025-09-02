@@ -27,7 +27,7 @@ import appeng.core.AppEng;
 public class CrankRenderer implements BlockEntityRenderer<CrankBlockEntity> {
 
     public static final StandaloneModelKey<SimpleModelWrapper> HANDLE_MODEL = new StandaloneModelKey<>(
-            AppEng.makeId("block/crank_handle"));
+            AppEng.makeId("block/crank_handle")::toString);
 
     private final BlockRenderDispatcher blockRenderer;
 
